@@ -1,0 +1,25 @@
+{
+  "name": "collaborator",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "fabric": "^5.3.0",
+    "requirejs": "^2.3.6",
+    "vue": "^3.4.15",
+    "vue-meta": "^2.4.0",
+    "vue-owl-carousel2": "^2.0.7",
+    "vue-plugin-load-script": "^2.1.1",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.3",
+    "vite": "^5.0.11"
+  }
+}

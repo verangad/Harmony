@@ -1,0 +1,19 @@
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-weight: normal;
+  font-family: andale mono, monospace;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: #C9E4DE;
+  transition:
+    color 0.5s,
+    background-color 0.5s;
+  line-height: 1.6;
+
+}

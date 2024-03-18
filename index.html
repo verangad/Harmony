@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8"/>
+
+
+        <title>Test</title>
+        <link rel="stylesheet" href="./styles.css" type="text/css">
+        <link rel="stylesheet" href="./querySheet.css" type="text/css">
+
+    </head>
+
+    <body>
+        <form action="/login" method="post">
+            <h1>Login</h1>
+            <label for="acc_name">Username</label>
+            <input type="text" id="acc_name" name="acc_name"><br><br>
+            <label for="acc_pass">Password</label>
+            <input type="text" id="acc_pass" name="acc_pass"><br><br>
+            <input type="submit" value="Submit" name="submit_login">
+        </form>
+
+        <form action="/create" method="post">
+            <h1>Create Account</h1>
+            <label for="create_name">Username</label>
+            <input type="text" id="create_name" name="create_name"><br><br>
+            <label for="create_pass">Password</label>
+            <input type="text" id="create_pass" name="create_pass"><br><br>
+            <input type="submit" value="Submit" name="submit_create">
+        </form>
+
+        <script src="./test.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    </body>
+</html>

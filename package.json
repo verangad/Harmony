@@ -1,0 +1,27 @@
+{
+  "name": "dvnetworksproject",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "body-parser": "^1.20.2",
+    "crypto-js": "^4.2.0",
+    "express": "^4.18.2",
+    "fabric": "^5.3.0",
+    "firebase": "^10.8.0",
+    "requirejs": "^2.3.6",
+    "socket.io-client": "^4.7.4",
+    "vue": "^3.4.19"
+  },
+  "devDependencies": {
+    "socket.io": "^4.7.4"
+  }
+}
