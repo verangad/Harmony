@@ -13,6 +13,8 @@ export default {
   components: {Box},
   methods: {
     tryLogin(){
+      this.$router.push({ path: '/home' })
+      /*
       axios.post("/login",{ "acc_name": this.acc_name, "acc_pass": this.acc_pass }, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -26,6 +28,7 @@ export default {
       .catch((error) => {
         console.log(error);
       })
+      */
     }
   }
 }

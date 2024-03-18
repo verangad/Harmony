@@ -57,24 +57,29 @@ serve.get('/', (req, res) => {
     res.sendFile(join(__dirname, './collaborator/dist/index.html'));
 });
 
-serve.get('/assets/index-DjRWjLxA.js', (req, res) => {
+serve.get('/assets/index-BpdEUl5i.js', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')
-    res.sendFile(join(__dirname, './collaborator/dist/assets/index-DjRWjLxA.js'));
+    res.sendFile(join(__dirname, './collaborator/dist/assets/index-BpdEUl5i.js'));
 });
 
-serve.get('/assets/index-BHGLi68v.css', (req, res) => {
+serve.get('/assets/index-B3t8XXVT.css', (req, res) => {
     res.setHeader('Content-Type', 'text/css')
-    res.sendFile(join(__dirname, './collaborator/dist/assets/index-BHGLi68v.css'));
+    res.sendFile(join(__dirname, './collaborator/dist/assets/index-B3t8XXVT.css'));
 });
 
-serve.get('/assets/Login-BgqT7UkL.js', (req, res) => {
+serve.get('/assets/Login-ClSncc_m.js', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')
-    res.sendFile(join(__dirname, './collaborator/dist/assets/Login-BgqT7UkL.js'));
+    res.sendFile(join(__dirname, './collaborator/dist/assets/Login-ClSncc_m.js'));
 });
 
 serve.get('/assets/Voice-Dff8Hvod.js', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')
     res.sendFile(join(__dirname, './collaborator/dist/assets/Voice-Dff8Hvod.js'));
+});
+
+serve.get('/assets/axios-HUVx99Ub.js', (req, res) => {
+    res.setHeader('Content-Type', 'text/javascript')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/axios-HUVx99Ub.js'));
 });
 
 serve.get('/canvas.html', (req, res) => {

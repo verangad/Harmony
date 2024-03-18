@@ -5,7 +5,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'login',
       component: () => import('../views/Login.vue'),
       meta: {
         requiresAuth: false
@@ -20,14 +20,14 @@ const router = createRouter({
       }
     },
     {
-      path: '/canvas',
-      name: 'canvas',
+      path: '/home',
+      name: 'home',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Canvas.vue'),
+      component: () => import('../views/Home.vue'),
       meta: {
-        requiresAuth: true
+        requiresAuth: false
       }
     },
     {
