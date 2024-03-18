@@ -5,15 +5,21 @@
   import Navigation from '../components/Navigation.vue'
   import ScoreList from '../components/ScoreList.vue'
   import Canvas from '../components/Canvas.vue'
+  import LoginRoom from '../components/LoginRoom.vue'
 
 
   export default {
     components: {SpacerContainer,
     Navigation,
     ScoreList,
-    Canvas},
+    Canvas,
+    LoginRoom},
     data() {
-      return { canvas: null}
+      return { 
+        canvas: null,
+        showCanvas: true,
+        scores: ['score1']
+      }
     },
     mounted() {
 
@@ -58,18 +64,32 @@
             // Failed to fetch script
           });
 
+    },
+    methods: {
+      swapToCollaborate(){
+        this.showCanvas = false
+      },
+      swapToCanvas(){
+        this.showCanvas = true
+      }
     }
   }
 </script>
 
 <template>
   <div class="home_divider_column">
-    <Navigation />
+    <Navigation>
+      <button type="button" @click="swapToCollaborate">Collaborate</button>
+      <button type="button" @click="swapToCanvas">View Canvas</button>
+    </Navigation>
     <div class="home_divider_row">
       <ScoreList>
-        Testest
+        <ul v-for="score in scores">
+          <button @click="this.$router.push('/scoreeditor')">{{score}}</button>
+        </ul>
       </ScoreList>
-      <Canvas />
+      <Canvas v-if="this.showCanvas" />
+      <LoginRoom v-if="!this.showCanvas" />
     </div>
   </div>
 
@@ -91,4 +111,4 @@
   width: 100%;
 }
 
-</style>
+</style>../components/LoginRoom.vue

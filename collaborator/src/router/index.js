@@ -31,14 +31,11 @@ const router = createRouter({
       }
     },
     {
-      path: '/voice',
-      name: 'voice',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Voice.vue'),
+      path: '/scoreeditor',
+      name: 'scoreeditor',
+      component: () => import('../views/ScoreEditor.vue'),
       meta: {
-        requiresAuth: true
+        requiresAuth: false
       }
     }
   ]

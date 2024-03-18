@@ -13,23 +13,21 @@ export default {
 <template>
   <nav>
     <div class="nav_item">
-      TestLogo
+      <button @click="">Create Score</button>
     </div>
     <div class="button_container">
       <div class="nav_item">
+      TestLogo
+      </div>
+      
+      <div class="nav_item">
         <div class="dropdown">
-          <button v-on:click="openDropdown" class="dropdown_button">Dropdown</button>
+          <button @click="openDropdown" class="dropdown_button">Dropdown</button>
           <div id="menu_dropdown" class="dropdown_content">
-            <RouterLink to="/voice">Voice</RouterLink>
-            <RouterLink to="/canvas">Video Sharing</RouterLink>
-            <RouterLink to="/canvas">File Sharing</RouterLink>
-            <RouterLink to="/canvas">Document</RouterLink>
-            <RouterLink to="/canvas">Canvas</RouterLink>
+            <slot>
+            </slot>
           </div>
         </div>
-      </div>
-      <div class="nav_item">
-        About
       </div>
     </div>
   </nav>
