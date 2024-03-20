@@ -1,7 +1,6 @@
 <script>
 export default {
-  name: "Box",
-
+  name: "Box"
 }
 </script>
 
@@ -14,14 +13,30 @@ export default {
 </template>
 
 <style scoped>
+
 .box_container {
-  background: #ffffff;
-  padding: 10px;
+
+  background: rgb(255, 255, 255, 0.2);
+  border-style: solid;
+  border-color: white;
   color: black;
-  width: 20vh;
-  height: 30vh;
-  border-radius: 20px;
+  width: 25vw;
+  height: 600px;
+  padding-bottom: 20px;
   flex-direction: column;
   align-items: stretch;
 }
+
+.box_container::before {
+  position: absolute;
+  content: '';
+  height: 600px;
+  width: 25vw;
+  display: block;
+  z-index: -1;
+  background: rgb(255, 255, 255,.4);
+  transform: rotate(4deg);
+}
+
+
 </style>

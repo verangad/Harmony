@@ -1,8 +1,12 @@
 <script>
 import { Vex } from 'vexflow';
+import ScoreEditorBar from '../components/ScoreEditorBar.vue'
 
 export default {
   name: "ScoreEditor",
+  components: {
+    ScoreEditorBar
+  },
   mounted(){
         const { Renderer, Stave } = Vex.Flow;
 
@@ -28,12 +32,19 @@ export default {
 </script>
 
 <template>
-  <button @click="this.$router.push('/home')">Back</button>
-  <div id="score_canvas">
-
+  <div class="score_editor_container">  
+    <ScoreEditorBar />
+    
+    <div id="score_canvas">
+    </div>
   </div>
+
 </template>
 
 <style scoped>
+.score_editor_container{
+    display: flex;
+    flex-direction: column;
+}
 
 </style>
