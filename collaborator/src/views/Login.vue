@@ -62,7 +62,7 @@ export default {
       </div>
       <div class="background_container">
         <div class="img_container">
-          <img class="vinyl_img" src="../assets/vinyl.png" alt="Vinyl.">
+          <!--<img class="vinyl_img" src="../assets/vinyl.png" alt="Vinyl."> -->
         </div>
       </div>
       <div class="enter_details">

@@ -9,6 +9,7 @@ export default {
 
 <template>
 <div class="score_list_item_container">
+  <img class="preview_img" src="../assets/vinyl.png">
   <slot>
 
   </slot>
@@ -19,11 +20,16 @@ export default {
 </template>
 
 <style scoped>
-.score_container {
+.preview_img {
+  width: 146px;
+  height: 146px;
+}
+
+.score_list_item_container {
+  width: 150px;
+  height: 250px;
+  border: 2px solid;
   border-color: black;
-  padding: 10px;
-  border-radius: 20px;
   flex-direction: column;
-  align-items: stretch;
 }
 </style>

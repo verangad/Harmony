@@ -6,6 +6,9 @@
   import ScoreList from '../components/ScoreList.vue'
   import Canvas from '../components/Canvas.vue'
   import LoginRoom from '../components/LoginRoom.vue'
+  import RowDivider from "@/components/RowDivider.vue"
+  import ColumnDivider from "@/components/ColumnDivider.vue"
+  import ScoreListItem from "@/components/ScoreListItem.vue"
 
 
   export default {
@@ -13,12 +16,15 @@
     Navigation,
     ScoreList,
     Canvas,
-    LoginRoom},
+    LoginRoom,
+    RowDivider,
+    ColumnDivider,
+    ScoreListItem},
     data() {
       return { 
         canvas: null,
-        showCanvas: true,
-        scores: ['score1']
+        showCanvas: false,
+        scores: ['score1', 'score2', 'score3', 'score4', 'score5', 'score6', 'score7', 'score8', 'score9']
       }
     },
     mounted() {
@@ -77,21 +83,24 @@
 </script>
 
 <template>
-  <div class="home_divider_column">
+  <RowDivider>
     <Navigation>
       <button type="button" @click="swapToCollaborate">Collaborate</button>
       <button type="button" @click="swapToCanvas">View Canvas</button>
     </Navigation>
-    <div class="home_divider_row">
+    <ColumnDivider>
       <ScoreList>
         <ul v-for="score in scores">
-          <button @click="this.$router.push('/scoreeditor')">{{score}}</button>
+          <ScoreListItem>
+            <button @click="this.$router.push('/scoreeditor')">{{score}}</button>
+          </ScoreListItem>
         </ul>
       </ScoreList>
-      <Canvas v-if="this.showCanvas" />
+
+      <!-- <Canvas v-if="this.showCanvas" /> -->
       <LoginRoom v-if="!this.showCanvas" />
-    </div>
-  </div>
+    </ColumnDivider>
+  </RowDivider>
 
 
 
@@ -99,16 +108,5 @@
 </template>
 
 <style>
-.home_divider_column {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
 
-.home_divider_row {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-}
-
-</style>../components/LoginRoom.vue
+</style>

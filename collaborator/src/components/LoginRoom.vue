@@ -16,36 +16,32 @@ export default {
 
 <template>
     <div class="join_container">
-      <div class="join_container_contents">
-        <Box>
-          <h1>Collaborate Score</h1>
-          <div>
-            <input v-model="room_name" placeholder="Room Name"/>
-          </div>
-          <div>
-            <input v-model="room_pass" placeholder="Password"/>
-          </div>
-          <div>
-            <button type="button" @click="">Submit</button>
-          </div>
-          <div>
-            <button type="button" @click="">Collaborate</button>
-          </div>
-        </Box>
-      </div>
+      <Box>
+        <h1>Collaborate Score</h1>
+        <div>
+          <input v-model="room_name" placeholder="Room Name"/>
+        </div>
+        <div>
+          <input v-model="room_pass" placeholder="Password"/>
+        </div>
+        <div>
+          <button type="button" @click="">Submit</button>
+        </div>
+        <div>
+          <button type="button" @click="">Collaborate</button>
+        </div>
+      </Box>
     </div>
 </template>
 
 <style scoped>
 .join_container {
-  position: relative;
-  width: 100%;
+  width: 30vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: calc(100vh - 72px);
 }
 
-.join_container_contents {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
 </style>
