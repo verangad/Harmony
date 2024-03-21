@@ -14,25 +14,37 @@ export default {
   },
   data() {
     return {
+      position: 0,
+      context: null,
       score: null,
-      notes: null
+      voice: null,
+      notes: null,
+      group: null
     }
   },
   methods: {
     addNote() {
-      this.notes.push(
-            // A C-Major chord.
-            new StaveNote({ keys: ["c/4", "e/4", "g/4"], duration: "q" }))
+      // And when you want to delete it, do this:
+      this.context.svg.removeChild(this.group);
+
+      // Open a group to hold all the SVG elements in the measure:
+      this.group = this.context.openGroup();
+      this.notes[this.position] =             // A quarter-note rest. Note that the key (b/4) specifies the vertical
+            // position of the rest.
+            new StaveNote({ keys: ["b/4"], duration: "q" })
+
+            
         // Create a voice in 4/4 and add above notes
-        const voice = new Voice({ num_beats: 4, beat_value: 4 });
-        voice.addTickables(this.notes);
+        this.voice = new Voice({ num_beats: 4, beat_value: 4 });
+        this.voice.addTickables(this.notes);
 
         // Format and justify the notes to 400 pixels.
-        new Formatter().joinVoices([voice]).format([voice], 350);
+        new Formatter().joinVoices([this.voice]).format([this.voice], 350);
 
         // Render voice
-        voice.draw(context, this.score);
-
+        this.voice.draw(this.context, this.score);
+        this.context.closeGroup();
+      this.position++
     }
   },
   mounted(){
@@ -44,7 +56,11 @@ export default {
 
         // Configure the rendering context.
         renderer.resize(500, 500);
-        const context = renderer.getContext();
+        this.context = renderer.getContext();
+                  // Then close the group:
+  
+        
+
 
         // Create a stave of width 400 at position 10, 40 on the canvas.
         const stave = new Stave(10, 40, 400);
@@ -53,15 +69,16 @@ export default {
         this.score.addClef("treble").addTimeSignature("4/4");
 
         // Connect it to the rendering context and draw!
-        this.score.setContext(context).draw();
+        this.score.setContext(this.context).draw();
 
                 // Create the notes
         this.notes = [
-            // A quarter-note C.
-            new StaveNote({ keys: ["c/4"], duration: "q" }),
-
-            // A quarter-note D.
-            new StaveNote({ keys: ["d/4"], duration: "q" }),
+            // A quarter-note rest. Note that the key (b/4) specifies the vertical
+            // position of the rest.
+            new StaveNote({ keys: ["b/4"], duration: "qr" }),
+                        // A quarter-note rest. Note that the key (b/4) specifies the vertical
+            // position of the rest.
+            new StaveNote({ keys: ["b/4"], duration: "qr" }),
 
             // A quarter-note rest. Note that the key (b/4) specifies the vertical
             // position of the rest.
@@ -73,15 +90,19 @@ export default {
             new StaveNote({ keys: ["b/4"], duration: "qr" }),
         ];
 
+          // Open a group to hold all the SVG elements in the measure:
+        this.group = this.context.openGroup();
+
         // Create a voice in 4/4 and add above notes
-        const voice = new Voice({ num_beats: 4, beat_value: 4 });
-        voice.addTickables(this.notes);
+        this.voice = new Voice({ num_beats: 4, beat_value: 4 });
+        this.voice.addTickables(this.notes);
 
         // Format and justify the notes to 400 pixels.
-        new Formatter().joinVoices([voice]).format([voice], 350);
+        new Formatter().joinVoices([this.voice]).format([this.voice], 350);
 
         // Render voice
-        voice.draw(context, this.score);
+        this.voice.draw(this.context, this.score);
+        this.context.closeGroup();
 
     }
 }   
