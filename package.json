@@ -23,6 +23,6 @@
     "vue": "^3.4.19"
   },
   "devDependencies": {
-    "socket.io": "^4.7.4"
+    "socket.io": "^4.7.5"
   }
 }

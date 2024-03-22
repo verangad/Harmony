@@ -29,13 +29,6 @@
     },
     mounted() {
 
-      loadScript("https://cdn.socket.io/4.7.4/socket.io.min.js")
-          .then(() => {
-            // Script is loaded, do something
-          })
-          .catch(() => {
-            // Failed to fetch script
-          });
       loadScript("https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.0.0/fabric.min.js")
           .then(() => {
             this.canvas = new fabric.Canvas('canvas');

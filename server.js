@@ -32,6 +32,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const serve = express();
+
 const server = createServer(serve);
 const io = new Server(server);
 
@@ -43,13 +44,13 @@ serve.use(express.json());
 serve.use(express.urlencoded({ extended: true }));
 
 io.on('connection', (socket) => {
-    socket.emit('initialize', tempStore)
     console.log('a user connected');
-    socket.on('draw', (obj) => {
-        console.log('a user connessscted');
-        tempStore.push(obj)
-        socket.broadcast.emit('drawclient', obj)
-    })
+    socket.emit('initialize', "HI THIS IS FROM THE SERVER")
+
+    // Receive change in a score
+    socket.on('scoreChange', (msg) => {
+        socket.broadcast.emit('scoreChangeBroadcast', msg);
+    });
 });
 
 serve.get('/', (req, res) => {
@@ -57,25 +58,69 @@ serve.get('/', (req, res) => {
     res.sendFile(join(__dirname, './collaborator/dist/index.html'));
 });
 
-serve.get('/assets/index-BpdEUl5i.js', (req, res) => {
+serve.get('/assets/index.js', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')
-    res.sendFile(join(__dirname, './collaborator/dist/assets/index-BpdEUl5i.js'));
+    res.sendFile(join(__dirname, './collaborator/dist/assets/index.js'));
 });
 
-serve.get('/assets/index-B3t8XXVT.css', (req, res) => {
+serve.get('/assets/index2.js', (req, res) => {
+    res.setHeader('Content-Type', 'text/javascript')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/index2.js'));
+});
+
+
+serve.get('/assets/index.css', (req, res) => {
     res.setHeader('Content-Type', 'text/css')
-    res.sendFile(join(__dirname, './collaborator/dist/assets/index-B3t8XXVT.css'));
+    res.sendFile(join(__dirname, './collaborator/dist/assets/index.css'));
 });
 
-serve.get('/assets/Login-ClSncc_m.js', (req, res) => {
+serve.get('/assets/Login.js', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')
-    res.sendFile(join(__dirname, './collaborator/dist/assets/Login-ClSncc_m.js'));
+    res.sendFile(join(__dirname, './collaborator/dist/assets/Login.js'));
 });
 
-serve.get('/assets/Voice-Dff8Hvod.js', (req, res) => {
+serve.get('/assets/Box.js', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')
-    res.sendFile(join(__dirname, './collaborator/dist/assets/Voice-Dff8Hvod.js'));
+    res.sendFile(join(__dirname, './collaborator/dist/assets/Box.js'));
 });
+
+serve.get('/assets/RowDivider.js', (req, res) => {
+    res.setHeader('Content-Type', 'text/javascript')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/RowDivider.js'));
+});
+
+serve.get('/assets/ColumnDivider.js', (req, res) => {
+    res.setHeader('Content-Type', 'text/javascript')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/ColumnDivider.js'));
+});
+
+serve.get('/assets/Home.js', (req, res) => {
+    res.setHeader('Content-Type', 'text/javascript')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/Home.js'));
+});
+
+serve.get('/assets/Home.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/Home.css'));
+});
+
+serve.get('/assets/vinyl.png', (req, res) => {
+    res.setHeader('Content-Type', 'text/javascript')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/vinyl.png'));
+});
+
+serve.get('/assets/ScoreEditor.js', (req, res) => {
+    res.setHeader('Content-Type', 'text/javascript')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/ScoreEditor.js'));
+});
+
+serve.get('/assets/ScoreEditor.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/ScoreEditor.css'));
+});
+
+
+
 
 serve.get('/assets/axios-HUVx99Ub.js', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')
@@ -163,4 +208,4 @@ serve.post('/create', async function (req, res) {
     }
 });
 
-serve.listen(9999,'localhost', () => console.log("listening"))
+server.listen(9999,'localhost', () => console.log("listening"))

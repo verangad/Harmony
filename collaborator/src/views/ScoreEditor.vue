@@ -1,9 +1,11 @@
 <script>
-import { Vex } from 'vexflow';
-const { Renderer, Stave, Voice, Formatter, StaveNote } = Vex.Flow;
+import { Renderer, Stave, Formatter, StaveNote } from 'vexflow';
 import ScoreEditorBar from '../components/ScoreEditorBar.vue'
 import Score from "../components/Score.vue"
 import RowDivider from '@/components/RowDivider.vue';
+import { socket } from "@/socket";
+import { simplifyStaves } from "@/scripts/staveParser.js";
+
 
 export default {
   name: "ScoreEditor",
@@ -14,96 +16,133 @@ export default {
   },
   data() {
     return {
-      position: 0,
+      position: {"stave": 0, "note": 0},
+      stavePos: {"x": 0, "y": 0},
       context: null,
-      score: null,
-      voice: null,
-      notes: null,
-      group: null
+      group: null,
+      staves: [],
+      socket: null
     }
   },
   methods: {
-    addNote() {
-      // And when you want to delete it, do this:
-      this.context.svg.removeChild(this.group);
-
-      // Open a group to hold all the SVG elements in the measure:
+    sendSheet() {
+      let simplifiedStaves = simplifyStaves(this.staves)
+      //console.log(simplifiedStaves)
+      let stringStaves =  JSON.stringify(simplifiedStaves)
+      socket.emit('scoreChange', stringStaves )
+    },
+    drawScore(){
       this.group = this.context.openGroup();
-      this.notes[this.position] =             // A quarter-note rest. Note that the key (b/4) specifies the vertical
-            // position of the rest.
-            new StaveNote({ keys: ["b/4"], duration: "q" })
+      for(let i = 0; i < this.staves.length; i++){
+        // Draw notes
+        Formatter.FormatAndDraw(this.context, this.staves[i].stave, this.staves[i].notes);
+      }
+      this.context.closeGroup();
+    },
+    moveLeft() {
+      // Dont move left when we are at the first stave and first note
+      if(this.position.stave !== 0 || this.position.note !== 0) {
 
-            
-        // Create a voice in 4/4 and add above notes
-        this.voice = new Voice({ num_beats: 4, beat_value: 4 });
-        this.voice.addTickables(this.notes);
+        // Clear previous score
+        this.context.svg.removeChild(this.group)
 
-        // Format and justify the notes to 400 pixels.
-        new Formatter().joinVoices([this.voice]).format([this.voice], 350);
+        // Unselect Note
+        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "black", strokeStyle: "black"})
 
-        // Render voice
-        this.voice.draw(this.context, this.score);
-        this.context.closeGroup();
-      this.position++
+        // Moving to previous stave if we are at the leftmost of the current stave
+        if(this.position.note === 0) {
+          this.position.stave--
+          this.position.note = this.staves[this.position.stave].notes.length - 1
+        }
+        else {
+          // Move left
+          this.position.note--
+        }
+
+        // Colour selected note blue
+        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+
+        this.drawScore()
+      }
+    },
+    moveRight() {
+      let rightmostNotePos = this.staves[this.position.stave].notes.length - 1
+
+      // Dont move right when we are at the last stave and last note
+      if(this.position.stave !== this.staves.length - 1 || this.position.note !== rightmostNotePos) {
+
+        // Clear previous score
+        this.context.svg.removeChild(this.group)
+
+        // Unselect Note
+        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "black", strokeStyle: "black"})
+
+        // Moving to next stave if we are at the rightmost of the current stave
+        if(this.position.note === rightmostNotePos) {
+          this.position.stave++
+          this.position.note = 0
+        }
+        else {
+          // Move right
+          this.position.note++
+        }
+
+        // Colour selected note blue
+        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+
+        this.drawScore()
+      }
+    },
+    editNote() {
+      this.context.svg.removeChild(this.group)
+
+      let editingStave = this.position.stave
+      let editingNote = this.position.note
+
+      this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: ["b/4"], duration: "q" })
+
+      // Select Note
+      this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+
+      this.drawScore()
+      this.sendSheet()
+    },
+    addStave(initialStave, clef, timeSignature, level, firstInBar) {
+
+      let notes = []
+      let stave = new Stave(this.stavePos.x, this.stavePos.y, 400);
+
+      if(firstInBar){
+        stave.addClef(clef)
+        stave.addTimeSignature(timeSignature)
+      }
+
+      stave.setContext(this.context).draw()
+
+      for(let i = 0; i < 4; i++){
+        notes.push(new StaveNote({ keys: ["b/4"], duration: "qr" }))
+      }
+
+      this.staves.push({"stave": stave, "notes": notes})
+      this.stavePos.x += 400
+
+      this.drawScore()
+
     }
   },
   mounted(){
+      socket.connect();
+      let div = document.getElementById("score_canvas")
+      let renderer = new Renderer(div, Renderer.Backends.SVG)
 
+      renderer.resize(div.offsetWidth, div.offsetHeight);
+      this.context = renderer.getContext()
 
-        // Create an SVG renderer and attach it to the DIV element named "boo".
-        const div = document.getElementById("score_canvas");
-        const renderer = new Renderer(div, Renderer.Backends.SVG);
+        this.addStave(true, "treble", "4/4", 0, true)
 
-        // Configure the rendering context.
-        renderer.resize(500, 500);
-        this.context = renderer.getContext();
-                  // Then close the group:
-  
-        
-
-
-        // Create a stave of width 400 at position 10, 40 on the canvas.
-        const stave = new Stave(10, 40, 400);
-        this.score = stave
-        // Add a clef and time signature.
-        this.score.addClef("treble").addTimeSignature("4/4");
-
-        // Connect it to the rendering context and draw!
-        this.score.setContext(this.context).draw();
-
-                // Create the notes
-        this.notes = [
-            // A quarter-note rest. Note that the key (b/4) specifies the vertical
-            // position of the rest.
-            new StaveNote({ keys: ["b/4"], duration: "qr" }),
-                        // A quarter-note rest. Note that the key (b/4) specifies the vertical
-            // position of the rest.
-            new StaveNote({ keys: ["b/4"], duration: "qr" }),
-
-            // A quarter-note rest. Note that the key (b/4) specifies the vertical
-            // position of the rest.
-            new StaveNote({ keys: ["b/4"], duration: "qr" }),
-            
-
-            // A quarter-note rest. Note that the key (b/4) specifies the vertical
-            // position of the rest.
-            new StaveNote({ keys: ["b/4"], duration: "qr" }),
-        ];
-
-          // Open a group to hold all the SVG elements in the measure:
-        this.group = this.context.openGroup();
-
-        // Create a voice in 4/4 and add above notes
-        this.voice = new Voice({ num_beats: 4, beat_value: 4 });
-        this.voice.addTickables(this.notes);
-
-        // Format and justify the notes to 400 pixels.
-        new Formatter().joinVoices([this.voice]).format([this.voice], 350);
-
-        // Render voice
-        this.voice.draw(this.context, this.score);
-        this.context.closeGroup();
-
+        // Select Note
+        //this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+        //this.drawScore()
     }
 }   
 
@@ -112,17 +151,25 @@ export default {
 <template>
   <div class="score_editor_container">  
     <ScoreEditorBar>
-      <button @click="addNote">Add Note</button>
+      <button @click="editNote">Edit Note</button>
+      <button @click="addStave(false, 'treble', '4/4', 0)">Add Stave</button>
+      <button @click="moveLeft">Move Left</button>
+      <button @click="moveRight">Move Right</button>
     </ScoreEditorBar>
-    <Score>
-      <div id="score_canvas">
-      </div>
-    </Score>
+    <div id="score_canvas" class="score_container">
+    </div>
   </div>
 
 </template>
 
 <style scoped>
+.score_container {
+  background-color: white;
+  width: 75vw;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
 .score_editor_container{
     display: flex;
     flex-direction: column;
