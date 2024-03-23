@@ -3,8 +3,8 @@ import { Renderer, Stave, Formatter, StaveNote } from 'vexflow';
 import ScoreEditorBar from '../components/ScoreEditorBar.vue'
 import Score from "../components/Score.vue"
 import RowDivider from '@/components/RowDivider.vue';
-import { socket } from "@/socket";
-import { simplifyStaves } from "@/scripts/staveParser.js";
+import { socket, state } from "@/socket";
+import { rehydrateStaves, simplifyStaves } from "@/scripts/staveParser.js";
 
 
 export default {
@@ -21,15 +21,15 @@ export default {
       context: null,
       group: null,
       staves: [],
-      socket: null
+      socket: null,
     }
   },
   methods: {
     sendSheet() {
       let simplifiedStaves = simplifyStaves(this.staves)
-      //console.log(simplifiedStaves)
-      let stringStaves =  JSON.stringify(simplifiedStaves)
-      socket.emit('scoreChange', stringStaves )
+      console.log(simplifiedStaves)
+      //let stringStaves =  JSON.stringify(simplifiedStaves)
+      socket.emit('scoreChange', simplifiedStaves )
     },
     drawScore(){
       this.group = this.context.openGroup();
@@ -108,7 +108,9 @@ export default {
       this.sendSheet()
     },
     addStave(initialStave, clef, timeSignature, level, firstInBar) {
-
+      if(!initialStave){
+        this.context.svg.removeChild(this.group)
+      }
       let notes = []
       let stave = new Stave(this.stavePos.x, this.stavePos.y, 400);
 
@@ -132,17 +134,28 @@ export default {
   },
   mounted(){
       socket.connect();
+
+
       let div = document.getElementById("score_canvas")
       let renderer = new Renderer(div, Renderer.Backends.SVG)
 
       renderer.resize(div.offsetWidth, div.offsetHeight);
       this.context = renderer.getContext()
 
-        this.addStave(true, "treble", "4/4", 0, true)
+      this.addStave(true, "treble", "4/4", 0, true)
 
         // Select Note
         //this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
         //this.drawScore()
+
+      socket.on('scoreChangeBroadcast', function(msg) {
+        console.log("CHANGED")
+        let rehydratedStaves = rehydrateStaves(msg)
+        this.staves = rehydratedStaves
+        this.context.svg.removeChild(this.group)
+        this.drawScore()
+        console.log(rehydratedStaves)
+      })
     }
 }   
 

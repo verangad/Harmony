@@ -1,9 +1,10 @@
 import { reactive } from "vue";
-import {io} from "socket.io-client";
+import { io } from "socket.io-client";
 
 
 export const state = reactive({
     connected: false,
+    score: null
 })
 const URL = process.env.NODE_ENV === "production" ? undefined : "http://localhost:9999";
 
@@ -14,6 +15,3 @@ socket.on('initialize', (msg) => {
     console.log(msg)
 })
 
-socket.on('scoreChangeBroadcast', (msg) => {
-    console.log(msg)
-})
