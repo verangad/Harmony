@@ -25,7 +25,7 @@
       return { 
         canvas: null,
         showCanvas: false,
-        scores: []
+        scores: ["ets"]
       }
     },
     methods: {

@@ -3,13 +3,19 @@ import { Renderer, Stave, Formatter, StaveNote } from 'vexflow';
 import ScoreEditorBar from '../components/ScoreEditorBar.vue'
 import Score from "../components/Score.vue"
 import RowDivider from '@/components/RowDivider.vue';
+import Sidebar from "../components/Sidebar.vue";
 import { socket, state } from "@/socket";
 import { rehydrateStaves, simplifyStaves } from "@/scripts/staveParser.js";
+import { createStave } from "@/scripts/scoreEditor.js";
+import ColumnDivider from "../components/ColumnDivider.vue";
+
 
 
 export default {
   name: "ScoreEditor",
   components: {
+    ColumnDivider,
+    Sidebar,
     ScoreEditorBar,
     RowDivider,
     Score
@@ -22,7 +28,12 @@ export default {
       group: null,
       staves: [],
       socket: null,
-      renderer: null
+      renderer: null,
+      div: null,
+      currDuration: "4",
+      currNote: "b",
+      currType: "n",
+      currOctave: "4"
     }
   },
   created() {
@@ -38,8 +49,8 @@ export default {
     },
     drawScore(){
       this.group = this.context.openGroup();
-      let div = document.getElementById("score_canvas")
-      this.renderer.resize(div.offsetWidth, div.offsetHeight);
+
+      this.renderer.resize(this.div.offsetWidth, this.div.offsetHeight);
       for(let i = 0; i < this.staves.length; i++){
         // Draw notes
         this.staves[i].stave.setContext(this.context).draw()
@@ -53,6 +64,7 @@ export default {
       this.drawScore()
     },
     moveLeft() {
+
       // Dont move left when we are at the first stave and first note
       if(this.position.stave !== 0 || this.position.note !== 0) {
 
@@ -112,7 +124,93 @@ export default {
       let editingStave = this.position.stave
       let editingNote = this.position.note
 
-      this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: ["b/4"], duration: "q" })
+      let key = this.currNote.concat("/", this.currOctave)
+
+      let selectedNoteDuration = this.staves[editingStave].notes[editingNote].duration
+      if(selectedNoteDuration === "q") {
+        selectedNoteDuration =  1.0/4.0
+      }
+      else {
+        selectedNoteDuration =  1.0/Number(selectedNoteDuration)
+      }
+
+      let newNoteDuration = 1.0/Number(this.currDuration)
+
+      // Split Note
+
+      // If note is same duration -> simply replace it
+      if(selectedNoteDuration === newNoteDuration) {
+        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: [key], duration: this.currDuration })
+      }
+      // If new note is smaller than the selected, split it up
+      else if (selectedNoteDuration > newNoteDuration) {
+
+        // Insert first note
+        let remainder = selectedNoteDuration - newNoteDuration
+        let index = editingNote + 1
+
+        let insertRest = this.currDuration
+
+        if(this.currType === "n"){
+          insertRest = this.currDuration.concat("r")
+        }
+
+        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: [key], duration: this.currDuration })
+
+        // Insert same of first note as rests until there is no room
+        for(remainder; remainder > 0; remainder -= newNoteDuration){
+          this.staves[editingStave].notes.splice(index, 0, new StaveNote({ keys: [key], duration: insertRest }))
+          index++
+        }
+
+      }
+      // If new note is bigger than the selected, replace the notes that take up the space
+      else if (selectedNoteDuration < newNoteDuration) {
+        // Insert first note
+        let remainder = newNoteDuration
+        let br = editingNote >= this.staves[editingStave].notes.length - 1
+        let total = 0
+
+        while(remainder > 0 && !br){
+          let minus = this.staves[editingStave].notes[editingNote].duration
+
+          if(minus === "q"){
+            minus = 1.0/4.0
+          }
+          else {
+            minus =  1.0/Number(minus)
+          }
+          br = editingNote >= this.staves[editingStave].notes.length - 1
+
+
+          remainder -= minus
+          total += minus
+
+          this.staves[editingStave].notes.splice(editingNote, 1)
+        }
+
+
+
+        if(editingNote >= this.staves[editingStave].notes.length - 1 && remainder > 0){
+          // If last stave, create new and insert remainder
+          if(this.staves.length <= editingStave + 1){
+            if(this.stavePos.x + 400 > this.div.offsetWidth) {
+              this.stavePos.x = 0
+              this.stavePos.y += 100
+            }
+
+            this.staves.push(createStave("treble", "4/4", 0, false, this.stavePos.x, this.stavePos.y))
+            this.stavePos.x += 400
+          }
+          // If not last stave
+          else {
+            console.log("SD")
+          }
+        }
+        else{
+          this.staves[editingStave].notes.splice(editingNote, 0, new StaveNote({ keys: [key], duration: (1.0/total).toString() }))
+        }
+      }
 
       // Select Note
       this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
@@ -124,20 +222,16 @@ export default {
       if(!initialStave){
         this.context.svg.removeChild(this.group)
       }
-      let notes = []
-      let stave = new Stave(this.stavePos.x, this.stavePos.y, 400);
 
-      if(firstInBar){
-        stave.addClef(clef)
-        stave.addTimeSignature(timeSignature)
+      if(this.stavePos.x + 400 > this.div.offsetWidth) {
+        this.stavePos.x = 0
+        this.stavePos.y += 100
       }
 
-      for(let i = 0; i < 4; i++){
-        notes.push(new StaveNote({ keys: ["b/4"], duration: "qr" }))
-      }
-
-      this.staves.push({"stave": stave, "notes": notes})
+      this.staves.push(createStave(clef, timeSignature, level, firstInBar, this.stavePos.x, this.stavePos.y))
       this.stavePos.x += 400
+      this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+
 
       this.drawScore()
       this.sendSheet()
@@ -151,44 +245,140 @@ export default {
   mounted(){
       socket.connect();
 
+      this.div = document.getElementById("score_canvas")
+      let renderer = new Renderer(this.div, Renderer.Backends.SVG)
 
-      let div = document.getElementById("score_canvas")
-      let renderer = new Renderer(div, Renderer.Backends.SVG)
-
-      renderer.resize(div.offsetWidth, div.offsetHeight)
+      renderer.resize(this.div.offsetWidth, this.div.offsetHeight)
       this.renderer = renderer
 
       this.context = renderer.getContext()
 
       this.addStave(true, "treble", "4/4", 0, true)
 
-      socket.on('scoreChangeBroadcast', (msg) => {
+    socket.on('scoreChangeBroadcast', (msg) => {
         let rehydratedStaves = rehydrateStaves(msg, this.context)
         this.updateScore(rehydratedStaves)
       })
     }
-}   
+}
 
 </script>
 
 <template>
   <div class="score_editor_container">  
     <ScoreEditorBar>
-      <button @click="editNote">Edit Note</button>
-      <button @click="addStave(false, 'treble', '4/4', 0)">Add Stave</button>
-      <button @click="moveLeft">Move Left</button>
-      <button @click="moveRight">Move Right</button>
+      <template #left>
+        <button @click="moveLeft">Move Left</button>
+      </template>
+      <template #right>
+        <button @click="moveRight">Move Right</button>
+      </template>
+      <template #add_stave>
+        <button @click="addStave(false, 'treble', '4/4', 0)">Add Stave</button>
+      </template>
+
+      <template #note_type>
+        <button class="letter_button" @click="this.currDuration = 'n'">
+          N
+        </button>
+        <button class="letter_button" @click="this.currDuration = 'r'">
+          R
+        </button>
+      </template>
+
+      <template #durations>
+        <button @click="this.currDuration = '16'">
+          <img class="duration_button" src="../assets/16th.png" alt="Sixteenth"/>
+        </button>
+        <button @click="this.currDuration = '8'">
+          <img class="duration_button" src="../assets/8th.png" alt="Eighth" />
+        </button>
+        <button @click="this.currDuration = '4'">
+          <img class="duration_button" src="../assets/4th.png" alt="Quarter" />
+        </button>
+        <button @click="this.currDuration = '2'">
+          <img class="duration_button" src="../assets/half.png" alt="Half" />
+        </button>
+        <button @click="this.currDuration = '1'">
+          <img class="duration_button" src="../assets/full.png" alt="Full"  />
+        </button>
+      </template>
+
+      <template #octave>
+        <button class="letter_button" @click="this.currOctave = '3'">
+          3
+        </button>
+        <button class="letter_button" @click="this.currOctave = '4'">
+          4
+        </button>
+        <button class="letter_button" @click="this.currOctave = '5'">
+          5
+        </button>
+        <button class="letter_button" @click="this.currOctave = '6'">
+          6
+        </button>
+      </template>
+
+      <template #note>
+        <button class="letter_button" @click="this.currNote = 'c'">
+          C
+        </button>
+        <button class="letter_button" @click="this.currNote = 'd'">
+          D
+        </button>
+        <button class="letter_button" @click="this.currNote = 'e'">
+          E
+        </button>
+        <button class="letter_button" @click="this.currNote = 'f'">
+          F
+        </button>
+        <button class="letter_button" @click="this.currNote = 'g'">
+          G
+        </button>
+        <button class="letter_button" @click="this.currNote = 'a'">
+          A
+        </button>
+        <button class="letter_button" @click="this.currNote = 'b'">
+          B
+        </button>
+      </template>
+
+      <template #accidental>
+        <button class="letter_button" @click="">
+          Sha
+        </button>
+        <button class="letter_button" @click="">
+          Fla
+        </button>
+      </template>
+
+      <template #edit_note>
+        <button @click="editNote">Edit Note</button>
+      </template>
     </ScoreEditorBar>
-    <div id="score_canvas" class="score_container">
-    </div>
+    <ColumnDivider>
+      <div id="score_canvas" class="score_container">
+      </div>
+      <Sidebar />
+    </ColumnDivider>
   </div>
 
 </template>
 
 <style scoped>
+.letter_button {
+  width: 55px;
+  height: 50px;
+}
+
+.duration_button {
+  width: 40px;
+  height: 40px;
+}
+
 .score_container {
   background-color: white;
-  width: 75vw;
+  width: 80vw;
   height: 100vh;
   overflow-y: scroll;
 }
