@@ -22,22 +22,35 @@ export default {
       group: null,
       staves: [],
       socket: null,
+      renderer: null
     }
+  },
+  created() {
+    window.addEventListener("resize", this.resize);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.resize);
   },
   methods: {
     sendSheet() {
       let simplifiedStaves = simplifyStaves(this.staves)
-      console.log(simplifiedStaves)
-      //let stringStaves =  JSON.stringify(simplifiedStaves)
       socket.emit('scoreChange', simplifiedStaves )
     },
     drawScore(){
       this.group = this.context.openGroup();
+      let div = document.getElementById("score_canvas")
+      this.renderer.resize(div.offsetWidth, div.offsetHeight);
       for(let i = 0; i < this.staves.length; i++){
         // Draw notes
+        this.staves[i].stave.setContext(this.context).draw()
         Formatter.FormatAndDraw(this.context, this.staves[i].stave, this.staves[i].notes);
       }
       this.context.closeGroup();
+    },
+    resize()
+    {
+      this.context.svg.removeChild(this.group)
+      this.drawScore()
     },
     moveLeft() {
       // Dont move left when we are at the first stave and first note
@@ -119,8 +132,6 @@ export default {
         stave.addTimeSignature(timeSignature)
       }
 
-      stave.setContext(this.context).draw()
-
       for(let i = 0; i < 4; i++){
         notes.push(new StaveNote({ keys: ["b/4"], duration: "qr" }))
       }
@@ -129,7 +140,12 @@ export default {
       this.stavePos.x += 400
 
       this.drawScore()
-
+      this.sendSheet()
+    },
+    updateScore(score) {
+      this.staves = score
+      this.context.svg.removeChild(this.group)
+      this.drawScore()
     }
   },
   mounted(){
@@ -139,22 +155,16 @@ export default {
       let div = document.getElementById("score_canvas")
       let renderer = new Renderer(div, Renderer.Backends.SVG)
 
-      renderer.resize(div.offsetWidth, div.offsetHeight);
+      renderer.resize(div.offsetWidth, div.offsetHeight)
+      this.renderer = renderer
+
       this.context = renderer.getContext()
 
       this.addStave(true, "treble", "4/4", 0, true)
 
-        // Select Note
-        //this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
-        //this.drawScore()
-
-      socket.on('scoreChangeBroadcast', function(msg) {
-        console.log("CHANGED")
-        let rehydratedStaves = rehydrateStaves(msg)
-        this.staves = rehydratedStaves
-        this.context.svg.removeChild(this.group)
-        this.drawScore()
-        console.log(rehydratedStaves)
+      socket.on('scoreChangeBroadcast', (msg) => {
+        let rehydratedStaves = rehydrateStaves(msg, this.context)
+        this.updateScore(rehydratedStaves)
       })
     }
 }   

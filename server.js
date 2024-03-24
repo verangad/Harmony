@@ -119,12 +119,23 @@ serve.get('/assets/ScoreEditor.css', (req, res) => {
     res.sendFile(join(__dirname, './collaborator/dist/assets/ScoreEditor.css'));
 });
 
-
-
-
-serve.get('/assets/axios-HUVx99Ub.js', (req, res) => {
+serve.get('/assets/Create.js', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')
-    res.sendFile(join(__dirname, './collaborator/dist/assets/axios-HUVx99Ub.js'));
+    res.sendFile(join(__dirname, './collaborator/dist/assets/Create.js'));
+});
+
+serve.get('/assets/Create.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/Create.css'));
+});
+
+
+
+
+
+serve.get('/assets/axios.js', (req, res) => {
+    res.setHeader('Content-Type', 'text/javascript')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/axios.js'));
 });
 
 serve.get('/canvas.html', (req, res) => {
@@ -181,8 +192,7 @@ serve.post('/login', async function(req, res) {
     if (userFound !== null) {
         if(crypto.decrypt(userFound.password, userFound.salt) === req.body.acc_pass) {
 
-            res.cookie('login', 'req.body.acc_name')
-            res.write(crypto.decrypt(userFound.password, userFound.salt))
+            res.write(req.body.acc_name)
             res.end()
         }
         else{
@@ -196,15 +206,36 @@ serve.post('/login', async function(req, res) {
     }
 });
 
+serve.post('/createScore', async function(req, res) {
+    console.log({requestBody: req.body})
+    await fb.createScore(db, req.body.user, "score")
+    console.log("Created")
+    res.status(200)
+    res.end()
+});
+
+serve.post('/getScores', async function(req, res) {
+    console.log({requestBody: req.body})
+    let scores = await fb.getScores(db, req.body.user)
+    console.log("SCORES ", scores)
+    res.write(JSON.stringify(scores))
+    res.status(200)
+    res.end()
+});
+
 serve.post('/create', async function (req, res) {
     console.log({requestBody: req.body})
     let userFound = await fb.getUser(db, req.body.create_name)
     if (userFound === null) {
         await fb.createUser(db, req.body.create_name, req.body.create_pass)
         console.log("Created")
+        res.status(200)
+        res.end()
     }
     else {
         console.log("Username taken")
+        res.status(401)
+        res.end()
     }
 });
 

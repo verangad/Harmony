@@ -13,7 +13,8 @@ export default {
 <template>
   <nav>
     <div class="nav_item">
-      <button @click="">Create Score</button>
+      <slot name="create_score">
+      </slot>
     </div>
     <div class="button_container">
       <div class="nav_item">

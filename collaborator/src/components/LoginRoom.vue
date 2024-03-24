@@ -1,5 +1,6 @@
 <script>
 import Box from "./Box.vue"
+import axios from "axios";
 export default {
   name: "LoginRoom",
   data() {
@@ -10,6 +11,24 @@ export default {
   },
   components: {
     Box
+  },
+  methods: {
+    tryJoin() {
+      //this.$router.push({ path: '/home' })
+      axios.post("/joinscore", {"room_name": this.room_name, "room_pass": this.room_pass}, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+          .then((resp) => {
+            console.log(resp)
+
+          })
+          .catch((error) => {
+            alert("Score and Password does not exist.");
+            console.log(error);
+          })
+    }
   }
 }
 </script>

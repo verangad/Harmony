@@ -1,4 +1,4 @@
-import {collection, getDoc, doc, setDoc} from "firebase/firestore";
+import {collection, getDoc, doc, setDoc, updateDoc} from "firebase/firestore";
 import {getDatabase, onValue, ref} from "firebase/database";
 import * as crypto from './encrypt.js';
 
@@ -19,10 +19,46 @@ export async function getUser(db, username) {
     return user
 }
 
+export async function getScores(db, username) {
+    const userRef = doc(db, "users", username)
+    const userInfo = await getDoc(userRef)
+    let userScores = userInfo.data().scores
+    console.log(userScores)
+    let returnScores = []
+
+    for(let i = 0; i < userScores.length; i++){
+        let id = userScores[i]
+        let scoreRef = doc(db, "scores", id.toString())
+        let score = await getDoc(scoreRef)
+        returnScores.push(score.data())
+    }
+
+    return returnScores
+}
+
+
+export async function createScore(db, username, name) {
+    const counterRef = doc(db, "counters", "scorecounter")
+    const counter = await getDoc(counterRef)
+    let countInt = counter.data().count
+    let newCount = countInt + 1
+
+    await setDoc(counterRef, {count: newCount})
+
+    const scoreRef = doc(db, "scores", countInt.toString())
+    await setDoc(scoreRef, {id: countInt, user: username, name: name})
+
+    const userRef = doc(db, "users", username)
+    const user = await getDoc(userRef)
+    let userScores = user.data().scores
+    console.log(user.data())
+    userScores.push(countInt)
+    await updateDoc(userRef, { scores: userScores })
+}
 
 export async function createUser(db, username, password) {
     const userRef = doc(db, "users", username)
     let encryptedPass = crypto.encrypt(password)
-    await setDoc(userRef, { username: username, password: encryptedPass.ciphertext, salt: encryptedPass.iv })
+    await setDoc(userRef, { username: username, password: encryptedPass.ciphertext, salt: encryptedPass.iv, scores: [] })
 }
 

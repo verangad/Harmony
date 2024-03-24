@@ -9,6 +9,7 @@
   import RowDivider from "@/components/RowDivider.vue"
   import ColumnDivider from "@/components/ColumnDivider.vue"
   import ScoreListItem from "@/components/ScoreListItem.vue"
+  import axios from "axios";
 
 
   export default {
@@ -24,45 +25,8 @@
       return { 
         canvas: null,
         showCanvas: false,
-        scores: ['score1', 'score2', 'score3', 'score4', 'score5', 'score6', 'score7', 'score8', 'score9']
+        scores: []
       }
-    },
-    mounted() {
-
-      loadScript("https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.0.0/fabric.min.js")
-          .then(() => {
-            this.canvas = new fabric.Canvas('canvas');
-
-            let rect = new fabric.Rect({
-              left: 0,
-              top: 0,
-              fill: 'white',
-              width: this.canvas.width,
-              height: this.canvas.height
-            });
-
-            this.canvas.add(rect);
-            this.canvas.isDrawingMode = true;
-
-            this.canvas.on('object:added', function(options) {
-              console.log(options)
-              /*
-              if(options.target && ownObj)
-              {
-                let object = options.target
-                //console.log(object)
-                //socket.emit('draw',  object)
-              }
-              ownObj = true
-              */
-            })
-
-
-          })
-          .catch(() => {
-            // Failed to fetch script
-          });
-
     },
     methods: {
       swapToCollaborate(){
@@ -70,7 +34,43 @@
       },
       swapToCanvas(){
         this.showCanvas = true
+      },
+      getScores() {
+        let login = localStorage.getItem('userToken')
+        axios.post("/getScores", {"user": login}, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+            .then((resp) => {
+
+              console.log(resp)
+              this.scores = resp.data
+
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+      },
+      createScore(){
+        let login = localStorage.getItem('userToken')
+        axios.post("/createScore", {"user": login}, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+            .then((resp) => {
+              this.getScores()
+
+            })
+            .catch((error) => {
+              alert("Score and Password does not exist.");
+              console.log(error);
+            })
       }
+    },
+    mounted() {
+      this.getScores()
     }
   }
 </script>
@@ -78,12 +78,15 @@
 <template>
   <RowDivider>
     <Navigation>
+      <template #create_score>
+        <button @click="createScore">Create Score</button>
+      </template>
       <button type="button" @click="swapToCollaborate">Collaborate</button>
       <button type="button" @click="swapToCanvas">View Canvas</button>
     </Navigation>
     <ColumnDivider>
       <ScoreList>
-        <ul v-for="score in scores">
+        <ul v-for="score in scores" :key="score.id">
           <ScoreListItem>
             <button @click="this.$router.push('/scoreeditor')">{{score}}</button>
           </ScoreListItem>

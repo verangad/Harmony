@@ -1,46 +1,28 @@
 <script>
-import Box from '../components/Box.vue'
 import RowDivider from "../components/RowDivider.vue";
 import ColumnDivider from "../components/ColumnDivider.vue";
 import LoginLogo from '../components/LoginLogo.vue'
 import HorizontalLine from '../components/HorizontalLine.vue'
-import axios from 'axios'
+import LoginBox from '../components/LoginBox.vue'
+import CreateBox from '../components/CreateBox.vue'
+
 
 export default {
 
   name: "Login",
-  data() {
-    return {
-      acc_name: "",
-      acc_pass: ""
-    };
-  },
   components: {
-    Box,
+    LoginBox,
     LoginLogo,
     HorizontalLine,
     RowDivider,
-    ColumnDivider},
-  methods: {
-    tryLogin(){
-      this.$router.push({ path: '/home' })
-      /*
-      axios.post("/login",{ "acc_name": this.acc_name, "acc_pass": this.acc_pass }, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      })
-      .then((resp) => {
-        console.log(resp)
-        localStorage.setItem('userToken',resp)
-        this.$router.push({ path: '/voice' })
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      */
-    }
-  }
+    ColumnDivider,
+    CreateBox
+  },
+  data() {
+    return {
+      is_login: true
+    };
+  },
 }
 
 </script>
@@ -65,23 +47,12 @@ export default {
           <!--<img class="vinyl_img" src="../assets/vinyl.png" alt="Vinyl."> -->
         </div>
       </div>
-      <div class="enter_details">
-        <div class="center">
-          <Box>
-            <h1>Login</h1>
-            <div>
-              <input v-model="acc_name" placeholder="Username"/>
-            </div>
-            <div>
-              <input v-model="acc_pass" placeholder="Password"/>
-            </div>
-            <div class="login_buttons">
-              <button type="button" @click="tryLogin">Submit</button>
-              <button type="button" @click="$router.push('/create')">Create Account</button>
-            </div>
-          </Box>
-        </div>
-      </div>
+      <LoginBox v-if="is_login">
+        <button type="button" @click="this.is_login=false">Create Account</button>
+      </LoginBox>
+      <CreateBox v-if="!is_login">
+        <button type="button" @click="this.is_login=true">Login</button>
+      </CreateBox>
     </ColumnDivider>
   </RowDivider>
 
@@ -122,9 +93,7 @@ h1 {
   padding: 20px;
 }
 
-.enter_details {
-  width: 40%;
-}
+
 
 .info {
   display: flex;
@@ -132,13 +101,7 @@ h1 {
   width:60%;
 }
 
-.center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  min-height: calc(100vh - 72px);
-}
+
 
 
 input {
@@ -164,9 +127,6 @@ button:hover {
   color: #8dd9f2;
 }
 
-.login_buttons {
-  display: flex;
-  justify-content: center;
-}
+
 
 </style>
