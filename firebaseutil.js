@@ -36,6 +36,18 @@ export async function getScores(db, username) {
     return returnScores
 }
 
+export async function findScore(db, name, pass) {
+    let scoreRef = doc(db, "scores", name.toString())
+    let score = await getDoc(scoreRef)
+    let returnScore = null
+
+    if(score.data().pass === pass) {
+        returnScore = score.data()
+    }
+
+    return returnScore
+}
+
 
 export async function createScore(db, username, name, score, pass) {
     console.log("SADFHDDA SFFSA", pass)

@@ -48,9 +48,16 @@ io.on('connection', (socket) => {
     console.log('a user connected');
     socket.emit('initialize', "HI THIS IS FROM THE SERVER")
 
-    // Receive change in a score
-    socket.on('scoreChange', (msg) => {
-        socket.broadcast.emit('scoreChangeBroadcast', msg);
+
+    // Join Room
+    socket.on("joinRoom", (msg) => {
+        socket.join(msg);
+        console.log("Joined room", msg)
+
+        // Receive change in a score
+        socket.on('scoreChange', (change) => {
+            socket.to(msg).emit('scoreChangeBroadcast', change);
+        });
     });
 });
 
@@ -193,15 +200,21 @@ serve.get('/socket.io', (req, res) => {
 
 serve.post('/login', async function(req, res) {
     console.log({requestBody: req.body})
-    let userFound = await fb.getUser(db, req.body.acc_name)
-    console.log("MADE IT")
-    if (userFound !== null) {
-        if(crypto.decrypt(userFound.password, userFound.salt) === req.body.acc_pass) {
+    if(req.body.acc_name != ""){
+        let userFound = await fb.getUser(db, req.body.acc_name)
+        console.log("MADE IT")
+        if (userFound !== null) {
+            if(crypto.decrypt(userFound.password, userFound.salt) === req.body.acc_pass) {
 
-            res.write(req.body.acc_name)
-            res.end()
+                res.write(req.body.acc_name)
+                res.end()
+            }
+            else{
+                res.status(401)
+                res.end()
+            }
         }
-        else{
+        else {
             res.status(401)
             res.end()
         }
@@ -247,6 +260,21 @@ serve.post('/saveScore', async function(req, res) {
     console.log("Saved")
     res.status(200)
     res.end()
+});
+
+
+serve.post('/joinScore', async function(req, res) {
+    console.log("HIHI", {requestBody: req.body})
+    let scoreFound = await fb.findScore(db, req.body.room_name, req.body.room_pass)
+    if (scoreFound !== null) {
+        res.write(JSON.stringify(scoreFound))
+        res.end()
+    }
+    else{
+        res.status(401)
+        res.end()
+    }
+
 });
 
 

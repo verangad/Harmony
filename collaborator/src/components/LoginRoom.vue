@@ -1,6 +1,7 @@
 <script>
 import Box from "./Box.vue"
 import axios from "axios";
+import { store } from '../store.js';
 export default {
   name: "LoginRoom",
   data() {
@@ -21,7 +22,10 @@ export default {
         }
       })
           .then((resp) => {
-            console.log(resp)
+            console.log("JOINED", resp.data)
+            store.score = resp.data
+            this.$router.push({
+              name: 'scoreeditor'})
 
           })
           .catch((error) => {
@@ -44,7 +48,7 @@ export default {
           <input v-model="room_pass" placeholder="Password"/>
         </div>
         <div>
-          <button type="button" @click="">Submit</button>
+          <button type="button" @click="tryJoin">Submit</button>
         </div>
         <div>
           <button type="button" @click="">Collaborate</button>

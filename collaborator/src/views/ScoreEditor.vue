@@ -296,6 +296,7 @@ export default {
   mounted(){
       socket.connect();
 
+
       this.div = document.getElementById("score_canvas")
       let renderer = new Renderer(this.div, Renderer.Backends.SVG)
 
@@ -306,6 +307,10 @@ export default {
 
       let recScore = store.score
       this.id = recScore.id
+
+      // Join room
+      socket.emit('joinRoom', this.id);
+
       let dehydratedStaves = JSON.parse(recScore.score)
       this.updateScore(true, rehydrateStaves(dehydratedStaves, this.context))
 
