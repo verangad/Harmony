@@ -37,16 +37,21 @@ export async function getScores(db, username) {
 }
 
 
-export async function createScore(db, username, name) {
+export async function createScore(db, username, name, score, pass) {
+    console.log("SADFHDDA SFFSA", pass)
+    // Get score counter to create unique IDs and increment
     const counterRef = doc(db, "counters", "scorecounter")
     const counter = await getDoc(counterRef)
     let countInt = counter.data().count
-    let newCount = countInt + 1
 
+    // Set new counter for next score
+    let newCount = countInt + 1
     await setDoc(counterRef, {count: newCount})
 
+    // Set score
     const scoreRef = doc(db, "scores", countInt.toString())
-    await setDoc(scoreRef, {id: countInt, user: username, name: name})
+    await setDoc(scoreRef, {id: countInt, user: username, name: name, score: score, pass: pass})
+
 
     const userRef = doc(db, "users", username)
     const user = await getDoc(userRef)
@@ -55,6 +60,13 @@ export async function createScore(db, username, name) {
     userScores.push(countInt)
     await updateDoc(userRef, { scores: userScores })
 }
+
+export async function saveScore(db, id, score) {
+    // Set score
+    const scoreRef = doc(db, "scores", id.toString())
+    await updateDoc(scoreRef, { score: score })
+}
+
 
 export async function createUser(db, username, password) {
     const userRef = doc(db, "users", username)

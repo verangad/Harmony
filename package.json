@@ -20,6 +20,7 @@
     "kill-port": "^2.0.1",
     "requirejs": "^2.3.6",
     "socket.io-client": "^4.7.4",
+    "vexflow": "^4.2.3",
     "vue": "^3.4.19"
   },
   "devDependencies": {

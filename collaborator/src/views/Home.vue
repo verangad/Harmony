@@ -10,6 +10,7 @@
   import ColumnDivider from "@/components/ColumnDivider.vue"
   import ScoreListItem from "@/components/ScoreListItem.vue"
   import axios from "axios";
+  import { store } from '../store.js'
 
 
   export default {
@@ -25,7 +26,7 @@
       return { 
         canvas: null,
         showCanvas: false,
-        scores: ["ets"]
+        scores: []
       }
     },
     methods: {
@@ -45,7 +46,9 @@
             .then((resp) => {
 
               console.log(resp)
+
               this.scores = resp.data
+
 
             })
             .catch((error) => {
@@ -67,6 +70,11 @@
               alert("Score and Password does not exist.");
               console.log(error);
             })
+      },
+      editScore(chosenScore){
+        store.score = chosenScore
+        this.$router.push({
+          name: 'scoreeditor'})
       }
     },
     mounted() {
@@ -87,8 +95,8 @@
     <ColumnDivider>
       <ScoreList>
         <ul v-for="score in scores" :key="score.id">
-          <ScoreListItem>
-            <button @click="this.$router.push('/scoreeditor')">{{score}}</button>
+          <ScoreListItem :scoreData="score">
+            <button @click="editScore(score)">{{score.name}} {{score.id}}</button>
           </ScoreListItem>
         </ul>
       </ScoreList>

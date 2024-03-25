@@ -39,3 +39,10 @@ export function checkPassword(pass, ciphertext) {
 
     return validPass
 }
+
+export function generatePassword(){
+    const ranArr = new Uint32Array(1);
+    crypto.getRandomValues(ranArr);
+
+    return ranArr[0].toString()
+}

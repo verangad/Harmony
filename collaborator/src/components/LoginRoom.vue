@@ -15,7 +15,7 @@ export default {
   methods: {
     tryJoin() {
       //this.$router.push({ path: '/home' })
-      axios.post("/joinscore", {"room_name": this.room_name, "room_pass": this.room_pass}, {
+      axios.post("/joinScore", {"room_name": this.room_name, "room_pass": this.room_pass}, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }

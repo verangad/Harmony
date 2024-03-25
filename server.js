@@ -10,6 +10,7 @@ import * as crypto from './encrypt.js'
 import {initializeApp} from "firebase/app";
 import {getFirestore} from "firebase/firestore";
 import {getDatabase} from "firebase/database";
+import {Stave, StaveNote} from "vexflow";
 
 const firebaseConfig = {
     apiKey: "AIzaSyB_-k6khbFKGxlEBD7TiWA356FcKOikOOY",
@@ -129,7 +130,10 @@ serve.get('/assets/Create.css', (req, res) => {
     res.sendFile(join(__dirname, './collaborator/dist/assets/Create.css'));
 });
 
-
+serve.get('/assets/store.js', (req, res) => {
+    res.setHeader('Content-Type', 'text/javascript')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/store.js'));
+});
 
 
 
@@ -162,6 +166,8 @@ serve.get('/querySheet.css', (req, res) => {
     res.setHeader('Content-Type', 'text/css')
     res.sendFile(join(__dirname, 'Styles/querySheet.css'));
 });
+
+
 
 serve.get('/%E2%80%9Dhttps://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.0.0/fabric.min.js%22', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')
@@ -207,8 +213,20 @@ serve.post('/login', async function(req, res) {
 });
 
 serve.post('/createScore', async function(req, res) {
+    let pass = crypto.generatePassword()
+    let simplifiedStaves = []
+    let notes = []
+    let simplifiedStave = {"clef": "treble", "x": 0, "y": 0, "width": 400, "timeSignature": "4/4"}
+
+    for (let i = 0; i < 4; i++){
+        notes.push({"keys": ["b/4"], "duration": "q", "noteType": "r"})
+    }
+
+    simplifiedStaves.push({"stave": simplifiedStave, "notes": notes})
+    let score = JSON.stringify(simplifiedStaves)
+
     console.log({requestBody: req.body})
-    await fb.createScore(db, req.body.user, "score")
+    await fb.createScore(db, req.body.user, "score", score, pass)
     console.log("Created")
     res.status(200)
     res.end()
@@ -222,6 +240,15 @@ serve.post('/getScores', async function(req, res) {
     res.status(200)
     res.end()
 });
+
+serve.post('/saveScore', async function(req, res) {
+    console.log({requestBody: req.body})
+    await fb.saveScore(db, req.body.id, req.body.score)
+    console.log("Saved")
+    res.status(200)
+    res.end()
+});
+
 
 serve.post('/create', async function (req, res) {
     console.log({requestBody: req.body})

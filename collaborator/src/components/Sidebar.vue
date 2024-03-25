@@ -1,28 +1,41 @@
 
 <script>
-import Box from "./Box.vue";
+
+import SetRoomBox from "./SetRoomBox.vue";
+import RowDivider from "./RowDivider.vue";
 export default {
 name: "Sidebar",
-  components: {Box}
+  components: {RowDivider, SetRoomBox}
 }
 </script>
 
 <template>
  <div class="sidebar">
-  <div>
+   <RowDivider>
+     <div class="temp">
 
-  </div>
-   <Box>
+     </div>
+     <SetRoomBox>
 
-   </Box>
+     </SetRoomBox>
+
+   </RowDivider>
  </div>
 </template>
 
 <style scoped>
+.temp {
+  background-color: black;
+  height: 40vh;
+}
 .sidebar{
   overflow-x: auto;
   width: 20vw;
-  height: 100vh;
+  height: calc(100vh - 100px);
   overflow-y: scroll;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 </style>

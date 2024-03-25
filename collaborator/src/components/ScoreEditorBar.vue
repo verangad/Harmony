@@ -24,8 +24,12 @@ export default {
           <slot name="right">
           </slot>
         </div>
-        <slot name="add_stave">
-        </slot>
+        <div class="stave_buttons">
+          <slot name="add_stave">
+          </slot>
+          <slot name="delete_stave">
+          </slot>
+        </div>
       </div>
     </div>
 

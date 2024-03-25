@@ -8,7 +8,8 @@ import { socket, state } from "@/socket";
 import { rehydrateStaves, simplifyStaves } from "@/scripts/staveParser.js";
 import { createStave } from "@/scripts/scoreEditor.js";
 import ColumnDivider from "../components/ColumnDivider.vue";
-
+import { store } from '../store.js'
+import axios from "axios";
 
 
 export default {
@@ -33,7 +34,8 @@ export default {
       currDuration: "4",
       currNote: "b",
       currType: "n",
-      currOctave: "4"
+      currOctave: "4",
+      id: null
     }
   },
   created() {
@@ -43,18 +45,56 @@ export default {
     window.removeEventListener("resize", this.resize);
   },
   methods: {
+    saveSheet() {
+      let simplifiedScore = JSON.stringify(simplifyStaves(this.staves))
+      axios.post("/saveScore", {"id": this.id, "score": simplifiedScore}, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+          .then((resp) => {
+            console.log("Saved!", resp)
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+    },
     sendSheet() {
       let simplifiedStaves = simplifyStaves(this.staves)
       socket.emit('scoreChange', simplifiedStaves )
     },
     drawScore(){
+
+      let drawX = 0
+      let drawY = 0
       this.group = this.context.openGroup();
 
       this.renderer.resize(this.div.offsetWidth, this.div.offsetHeight);
       for(let i = 0; i < this.staves.length; i++){
         // Draw notes
+
+
+        if(drawX === 0){
+          this.staves[i].stave = new Stave(drawX, drawY, 400)
+          this.staves[i].stave.addClef("treble")
+          this.staves[i].stave.addTimeSignature("4/4")
+        }
+        else {
+          this.staves[i].stave = new Stave(drawX, drawY, 400)
+        }
+
         this.staves[i].stave.setContext(this.context).draw()
         Formatter.FormatAndDraw(this.context, this.staves[i].stave, this.staves[i].notes);
+
+
+        if(drawX + 800 > this.div.offsetWidth) {
+          drawX = 0
+          drawY += 100
+        }
+        else{
+          drawX += 400
+        }
+
       }
       this.context.closeGroup();
     },
@@ -217,28 +257,39 @@ export default {
 
       this.drawScore()
       this.sendSheet()
+      this.saveSheet()
     },
     addStave(initialStave, clef, timeSignature, level, firstInBar) {
       if(!initialStave){
         this.context.svg.removeChild(this.group)
       }
 
-      if(this.stavePos.x + 400 > this.div.offsetWidth) {
-        this.stavePos.x = 0
-        this.stavePos.y += 100
-      }
 
       this.staves.push(createStave(clef, timeSignature, level, firstInBar, this.stavePos.x, this.stavePos.y))
-      this.stavePos.x += 400
       this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
 
 
       this.drawScore()
       this.sendSheet()
+      this.saveSheet()
     },
-    updateScore(score) {
+    deleteStave()
+    {
+      if(this.staves.length > 0) {
+        this.context.svg.removeChild(this.group)
+        this.staves.pop()
+
+        this.drawScore()
+        this.sendSheet()
+        this.saveSheet()
+      }
+
+    },
+    updateScore(initialStave, score) {
       this.staves = score
-      this.context.svg.removeChild(this.group)
+      if(!initialStave) {
+        this.context.svg.removeChild(this.group)
+      }
       this.drawScore()
     }
   },
@@ -253,11 +304,15 @@ export default {
 
       this.context = renderer.getContext()
 
-      this.addStave(true, "treble", "4/4", 0, true)
+      let recScore = store.score
+      this.id = recScore.id
+      let dehydratedStaves = JSON.parse(recScore.score)
+      this.updateScore(true, rehydrateStaves(dehydratedStaves, this.context))
+
 
     socket.on('scoreChangeBroadcast', (msg) => {
         let rehydratedStaves = rehydrateStaves(msg, this.context)
-        this.updateScore(rehydratedStaves)
+        this.updateScore(false, rehydratedStaves)
       })
     }
 }
@@ -275,6 +330,9 @@ export default {
       </template>
       <template #add_stave>
         <button @click="addStave(false, 'treble', '4/4', 0)">Add Stave</button>
+      </template>
+      <template #delete_stave>
+        <button @click="deleteStave">Delete Stave</button>
       </template>
 
       <template #note_type>
@@ -379,7 +437,7 @@ export default {
 .score_container {
   background-color: white;
   width: 80vw;
-  height: 100vh;
+  height:  calc(100vh - 100px);
   overflow-y: scroll;
 }
 
