@@ -10,6 +10,8 @@ import { createStave } from "@/scripts/scoreEditor.js";
 import ColumnDivider from "../components/ColumnDivider.vue";
 import { store } from '../store.js'
 import axios from "axios";
+import SideScroller from '@/components/SideScroller.vue';
+
 
 
 export default {
@@ -19,7 +21,8 @@ export default {
     Sidebar,
     ScoreEditorBar,
     RowDivider,
-    Score
+    Score,
+    SideScroller
   },
   data() {
     return {
@@ -35,8 +38,13 @@ export default {
       currNote: "b",
       currType: "n",
       currOctave: "4",
-      id: null
-    }
+      id: null,
+      visualizer: null,
+      visualizerRenderer: null,
+      visualizerContext: null,
+      visualizerNotes: [],
+      visualizerGroup: null
+      }
   },
   created() {
     window.addEventListener("resize", this.resize);
@@ -102,6 +110,7 @@ export default {
     {
       this.context.svg.removeChild(this.group)
       this.drawScore()
+      this.drawVisualizer()
     },
     moveLeft() {
 
@@ -289,21 +298,42 @@ export default {
       this.staves = score
       if(!initialStave) {
         this.context.svg.removeChild(this.group)
+        this.visualizerContext.svg.removeChild(this.visualizerGroup)
       }
       this.drawScore()
-    }
+      this.drawVisualizer()
+    },
+    drawVisualizer(){
+
+      this.visualizerGroup = this.visualizerContext.openGroup();
+
+      this.visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight);
+      let stave = createStave("treble", "4/4", 0, true, 0, 0)
+
+        // Draw notes
+
+
+      stave.setContext(this.visualizerContext).draw()
+      Formatter.FormatAndDraw(this.visualizerContext, stave, this.visualizerNotes);
+      this.visualizerContext.closeGroup();
+
+      }
   },
   mounted(){
       socket.connect();
 
-
+      this.visualizer = document.getElementById("chordVisualizer")
       this.div = document.getElementById("score_canvas")
       let renderer = new Renderer(this.div, Renderer.Backends.SVG)
+      let visualizerRenderer = new Renderer(this.visualizer, Renderer.Backends.SVG)
 
       renderer.resize(this.div.offsetWidth, this.div.offsetHeight)
+      visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight)
       this.renderer = renderer
+      this.visualizerRenderer = visualizerRenderer
 
       this.context = renderer.getContext()
+      this.visualizerContext = visualizerRenderer.getContext()
 
       let recScore = store.score
       this.id = recScore.id
@@ -313,6 +343,7 @@ export default {
 
       let dehydratedStaves = JSON.parse(recScore.score)
       this.updateScore(true, rehydrateStaves(dehydratedStaves, this.context))
+      this.drawVisualizer()
 
 
     socket.on('scoreChangeBroadcast', (msg) => {
@@ -422,7 +453,27 @@ export default {
     <ColumnDivider>
       <div id="score_canvas" class="score_container">
       </div>
-      <Sidebar />
+      <Sidebar>
+        <template #addButton>
+          <button class="letter_button" @click="this.currNote = 'c'">
+          Add Note
+          </button>
+        </template>
+        <div id="chordVisualizer" class="visualizer">
+
+</div>
+        <template #visualizer>
+
+        </template>
+        
+        
+          <template #submitChord>
+          <button class="letter_button" @click="this.currNote = 'a'">
+            Submit
+          </button>
+          </template>
+        
+      </Sidebar>
     </ColumnDivider>
   </div>
 
@@ -449,6 +500,11 @@ export default {
 .score_editor_container{
     display: flex;
     flex-direction: column;
+}
+
+.visualizer {
+  width: 100%;
+  height:100px;
 }
 
 </style>

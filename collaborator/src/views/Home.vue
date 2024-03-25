@@ -26,7 +26,7 @@
       return { 
         canvas: null,
         showCanvas: false,
-        scores: []
+        scores: ["test"]
       }
     },
     methods: {
@@ -37,6 +37,7 @@
         this.showCanvas = true
       },
       getScores() {
+        /*
         let login = localStorage.getItem('userToken')
         axios.post("/getScores", {"user": login}, {
           headers: {
@@ -53,7 +54,7 @@
             })
             .catch((error) => {
               console.log(error);
-            })
+            })*/
       },
       createScore(){
         let login = localStorage.getItem('userToken')
