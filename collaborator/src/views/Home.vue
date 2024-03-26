@@ -38,26 +38,21 @@
       },
       getScores() {
 
-        let login = localStorage.getItem('userToken')
+        let login = store.userData
         axios.post("/getScores", {"user": login}, {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
         })
             .then((resp) => {
-
-              console.log("DSFD", resp)
-
               this.scores = resp.data
-
-
             })
             .catch((error) => {
               console.log(error);
             })
       },
       createScore(){
-        let login = localStorage.getItem('userToken')
+        let login = store.userData
         axios.post("/createScore", {"user": login}, {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -103,7 +98,10 @@
             </template>
             <template #score_details>
 
-              {{ score.name }}{{ score.id }}
+              <div class="preview_text">
+                {{ score.name }} (id: {{ score.id }})
+              </div>
+
 
             </template>
           </ScoreListItem>
@@ -122,6 +120,13 @@
 
 <style>
 @import '../assets/base.css';
+
+.preview_text {
+  width: 100%;
+  height: 60px;
+  background-color: white;
+  text-align: center;
+}
 .score_list_button {
   width: 100%;
 }

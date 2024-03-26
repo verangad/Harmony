@@ -8,7 +8,7 @@ export default {
 <template>
 <div class="score_container">
   <div class="score_container_header">
-    Scores
+    <h1>Scores</h1>
   </div>
   <div class="score_grid">
 
@@ -35,12 +35,17 @@ export default {
 .score_container_header {
   width: 100%;
   height: 60px;
-  color: white;
   display: flex;
   justify-content: center;
   background: white;
   border: 5px solid var(--secondary_colour);
   border-radius: 20px 20px 0px 0px;
+}
+
+h1{
+
+  color: black;
+
 }
 
 .score_container {

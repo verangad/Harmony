@@ -18,12 +18,39 @@ name: "Sidebar",
      <div class="chord_builder">
       <RowDivider>
         <h1>Chord Builder</h1>
+        <div class="space_container">
+          <SideScroller>
+            <slot name="chordNote">
+
+            </slot>
+          </SideScroller>
+          <SideScroller>
+            <slot name="chordOctave">
+
+            </slot>
+          </SideScroller>
+        </div>
+
+        <div>
+          <slot name="chordAccidental">
+
+          </slot>
+        </div>
+        <div class="center_container">
+          <SideScroller>
+            <slot name="chordDuration">
+
+            </slot>
+          </SideScroller>
+        </div>
+
+
         <div>
           <slot name="addButton">
 
           </slot>
         </div>
-        <div>
+        <div class="visualizer_container">
           <slot name="visualizer">
 
           </slot>
@@ -47,10 +74,23 @@ name: "Sidebar",
 
 <style scoped>
 @import '../assets/scrollbar.css';
-
+.visualizer_container {
+  display: flex;
+  justify-content: center;
+}
+.space_container {
+  display: flex;
+  justify-content: space-around;
+  padding: 0px 0px 10px 0px;
+}
+.center_container {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0px 10px 0px;
+}
 .chord_builder {
   background-color: white;
-  height: calc(60vh - 70px);
+  height: calc(63vh - 70px);
   width: 20vw;
 }
 .sidebar{
@@ -77,7 +117,7 @@ name: "Sidebar",
   }
   .chord_builder {
     background-color: white;
-    height: calc(60vh - 70px);
+    height: calc(63vh - 70px);
     width: 300px;
   }
 }

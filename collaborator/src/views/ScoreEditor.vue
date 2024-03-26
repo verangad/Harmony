@@ -39,11 +39,14 @@ export default {
       currNote: "b",
       currType: "n",
       currOctave: "4",
+      chordDuration: "1",
+      chordNote: "b",
+      chordOctave: "4",
       id: null,
       visualizer: null,
       visualizerRenderer: null,
       visualizerContext: null,
-      visualizerNotes: [],
+      visualizerNotes: ["c/4", "e/4", "g/4"],
       visualizerGroup: null
       }
   },
@@ -187,13 +190,23 @@ export default {
         this.drawScore()
       }
     },
-    editNote() {
+    editNote(chord) {
       this.context.svg.removeChild(this.group)
 
       let editingStave = this.position.stave
       let editingNote = this.position.note
 
+
       let key = this.currNote.concat("/", this.currOctave)
+      let keyArr = []
+      let dur = this.currDuration
+      if(chord){
+        dur = this.chordDuration
+        keyArr = this.visualizerNotes
+      }
+      else{
+        keyArr = [key]
+      }
 
       let selectedNoteDuration = this.staves[editingStave].notes[editingNote].duration
       if(selectedNoteDuration === "q") {
@@ -203,13 +216,13 @@ export default {
         selectedNoteDuration =  1.0/Number(selectedNoteDuration)
       }
 
-      let newNoteDuration = 1.0/Number(this.currDuration)
+      let newNoteDuration = 1.0/Number(dur)
 
       // Split Note
 
       // If note is same duration -> simply replace it
       if(selectedNoteDuration === newNoteDuration) {
-        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: [key], duration: this.currDuration })
+        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: keyArr, duration: dur })
       }
       // If new note is smaller than the selected, split it up
       else if (selectedNoteDuration > newNoteDuration) {
@@ -218,13 +231,13 @@ export default {
         let remainder = selectedNoteDuration - newNoteDuration
         let index = editingNote + 1
 
-        let insertRest = this.currDuration
+        let insertRest = dur
 
         if(this.currType === "n"){
-          insertRest = this.currDuration.concat("r")
+          insertRest = dur.concat("r")
         }
 
-        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: [key], duration: this.currDuration })
+        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: [key], duration: dur })
 
         // Insert same of first note as rests until there is no room
         for(remainder; remainder > 0; remainder -= newNoteDuration){
@@ -321,26 +334,52 @@ export default {
         this.visualizerContext.svg.removeChild(this.visualizerGroup)
       }
       this.drawScore()
-      this.drawVisualizer()
     },
-    drawVisualizer(){
-
+    drawVisualizer(initial){
+      if(!initial){
+        this.visualizerContext.svg.removeChild(this.visualizerGroup)
+      }
       this.visualizerGroup = this.visualizerContext.openGroup();
 
       this.visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight);
       let visualizerStave = new Stave(0,0,200)
+      visualizerStave.addClef("treble")
+      visualizerStave.addTimeSignature("4/4")
 
+      let chordNotes = [new StaveNote({keys: ["b/4"], duration: "1r"})]
+      if(this.visualizerNotes.length > 0){
+        chordNotes = [new StaveNote({keys: this.visualizerNotes, duration: this.chordDuration})]
+      }
 
         // Draw notes
       console.log(visualizerStave)
 
-      //visualizerStave.setContext(this.visualizerContext).draw()
-      //Formatter.FormatAndDraw(this.visualizerContext, visualizerStave, this.visualizerNotes);
+      visualizerStave.setContext(this.visualizerContext).draw()
+      Formatter.FormatAndDraw(this.visualizerContext, visualizerStave, chordNotes);
       this.visualizerContext.closeGroup();
 
       },
       addNoteToChord() {
-        this.visualizerNotes.push(ne)
+        let note = this.chordNote.concat("/", this.chordOctave)
+        if(!this.visualizerNotes.includes(note)){
+          this.visualizerNotes.push(note)
+          this.drawVisualizer(false)
+        }
+
+      },
+      changeChordDuration(duration) {
+        this.chordDuration = duration
+        if(this.visualizerNotes.length > 0) {
+          this.drawVisualizer(false)
+        }
+
+      },
+      clearChord() {
+        this.visualizerNotes = []
+        this.drawVisualizer(false)
+      },
+      submitChord() {
+        this.editNote(true)
       }
   },
   mounted(){
@@ -369,7 +408,7 @@ export default {
 
       let dehydratedStaves = JSON.parse(recScore.score)
       this.updateScore(true, rehydrateStaves(dehydratedStaves, this.context))
-      this.drawVisualizer()
+      this.drawVisualizer(true)
 
 
     socket.on('scoreChangeBroadcast', (msg) => {
@@ -482,7 +521,7 @@ export default {
       </template>
 
       <template #edit_note>
-        <button class="edit_button" @click="editNote">Edit Note</button>
+        <button class="edit_button" @click="editNote(false)">Edit Note</button>
       </template>
     </ScoreEditorBar>
     <ColumnDivider>
@@ -490,6 +529,72 @@ export default {
       </div>
 
       <Sidebar>
+
+        <template #chordNote>
+          <button class="letter_button" @click="this.chordNote = 'c'">
+            C
+          </button>
+          <button class="letter_button" @click="this.chordNote = 'd'">
+            D
+          </button>
+          <button class="letter_button" @click="this.chordNote = 'e'">
+            E
+          </button>
+          <button class="letter_button" @click="this.chordNote = 'f'">
+            F
+          </button>
+          <button class="letter_button" @click="this.chordNote = 'g'">
+            G
+          </button>
+          <button class="letter_button" @click="this.chordNote = 'a'">
+            A
+          </button>
+          <button class="letter_button" @click="this.chordNote = 'b'">
+            B
+          </button>
+        </template>
+        <template #chordDuration>
+          <button class="letter_button" @click="changeChordDuration('16')">
+            <img class="duration_button" src="../assets/16th.png" alt="Sixteenth"/>
+          </button>
+          <button class="letter_button" @click="changeChordDuration('8')">
+            <img class="duration_button" src="../assets/8th.png" alt="Eighth" />
+          </button>
+          <button class="letter_button" @click="changeChordDuration('4')">
+            <img class="duration_button" src="../assets/4th.png" alt="Quarter" />
+          </button>
+          <button class="letter_button" @click="changeChordDuration('2')">
+            <img class="duration_button" src="../assets/half.png" alt="Half" />
+          </button>
+          <button class="letter_button" @click="changeChordDuration('1')">
+            <img class="duration_button" src="../assets/full.png" alt="Full"  />
+          </button>
+        </template>
+
+
+
+        <template #chordOctave>
+          <button class="letter_button" @click="this.chordOctave = '3'">
+            3
+          </button>
+          <button class="letter_button" @click="this.chordOctave = '4'">
+            4
+          </button>
+          <button class="letter_button" @click="this.chordOctave = '5'">
+            5
+          </button>
+          <button class="letter_button" @click="this.chordOctave = '6'">
+            6
+          </button>
+        </template>
+        <template #chordAccidental>
+          <button class="letter_button" @click="">
+            <img class="duration_button" src="../assets/Sharp.png" alt="Sharp" />
+          </button>
+          <button class="letter_button" @click="">
+            <img class="duration_button" src="../assets/Flat.png" alt="Flat" />
+          </button>
+        </template>
         <template #addButton>
           <button @click="addNoteToChord">
           Add Note
@@ -505,12 +610,12 @@ export default {
 
         
         <template #submitChord>
-          <button  @click="">
+          <button  @click="submitChord">
             Submit
           </button>
         </template>
         <template #clearChord>
-          <button  @click="">
+          <button  @click="clearChord">
             Clear
           </button>
         </template>
@@ -561,12 +666,8 @@ export default {
 }
 
 .visualizer {
-  width: 100%;
-  height: 100px;
-}
-
-.letter_button {
-
+  width: 210px;
+  height: 115px;
 }
 
 .stave_button {

@@ -93,7 +93,7 @@ h1 {
   font-size: 4em;
   line-height: 34px;
   height: 25px;
-  overflow-y: visible;
+  overflow: visible;
 }
 
 .info_box {

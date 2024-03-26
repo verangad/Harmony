@@ -40,17 +40,18 @@ export async function findScore(db, name, pass) {
     let scoreRef = doc(db, "scores", name.toString())
     let score = await getDoc(scoreRef)
     let returnScore = null
-
-    if(score.data().pass === pass) {
-        returnScore = score.data()
+    console.log("WHAT?", score.data())
+    if(score.data() !== undefined){
+        if(score.data().pass === pass) {
+            returnScore = score.data()
+        }
     }
-
     return returnScore
 }
 
 
 export async function createScore(db, username, name, score, pass) {
-    console.log("SADFHDDA SFFSA", pass)
+
     // Get score counter to create unique IDs and increment
     const counterRef = doc(db, "counters", "scorecounter")
     const counter = await getDoc(counterRef)
@@ -62,7 +63,7 @@ export async function createScore(db, username, name, score, pass) {
 
     // Set score
     const scoreRef = doc(db, "scores", countInt.toString())
-    await setDoc(scoreRef, {id: countInt, user: username, name: name, score: score, pass: pass})
+    await setDoc(scoreRef, {id: countInt, user: username, name: name, score: score, pass: pass, image: "/assets/default.png"})
 
 
     const userRef = doc(db, "users", username)
@@ -73,6 +74,17 @@ export async function createScore(db, username, name, score, pass) {
     await updateDoc(userRef, { scores: userScores })
 }
 
+export async function changeName(db, id, name) {
+
+    const scoreRef = doc(db, "scores", id.toString())
+    await updateDoc(scoreRef, { name: name })
+}
+
+export async function changePass(db, id, pass) {
+
+    const scoreRef = doc(db, "scores", id.toString())
+    await updateDoc(scoreRef, { pass: pass })
+}
 
 export async function saveImage(db, id, image) {
     // Set image

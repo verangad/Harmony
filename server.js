@@ -189,6 +189,11 @@ serve.get('/assets/rest.png', (req, res) => {
     res.sendFile(join(__dirname, './collaborator/dist/assets/rest.png'));
 });
 
+serve.get('/assets/default.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/default.png'));
+});
+
 
 
 
@@ -319,11 +324,42 @@ serve.post('/saveScoreImage', async function(req, res) {
     res.end()
 });
 
+serve.post('/changeName', async function(req, res) {
+    console.log({requestBody: req.body})
+    if(req.body.room_id !== '' && req.body.room_name !== '') {
+        await fb.changeName(db, req.body.room_id, req.body.room_name)
+        console.log("Name Changed")
+        res.status(200)
+        res.end()
+    }
+    else {
+        res.status(401)
+        res.end()
+    }
+});
+
+serve.post('/changePass', async function(req, res) {
+    console.log({requestBody: req.body})
+    if(req.body.room_id !== '' && req.body.room_pass !== '') {
+        await fb.changePass(db, req.body.room_id, req.body.room_pass)
+        console.log("Pass Changed")
+        res.status(200)
+        res.end()
+    }
+    else {
+        res.status(401)
+        res.end()
+    }
+});
+
 
 
 serve.post('/joinScore', async function(req, res) {
     console.log("HIHI", {requestBody: req.body})
-    let scoreFound = await fb.findScore(db, req.body.room_name, req.body.room_pass)
+    let scoreFound = null
+    if(req.body.room_name !== '' && req.body.room_pass !== ''){
+        scoreFound = await fb.findScore(db, req.body.room_name, req.body.room_pass)
+    }
     if (scoreFound !== null) {
         res.write(JSON.stringify(scoreFound))
         res.end()

@@ -1,6 +1,7 @@
 <script>
 import Box from '../components/Box.vue'
 import axios from 'axios'
+import { store } from '../store.js'
 
 export default {
   name: "LoginBox",
@@ -24,7 +25,7 @@ export default {
       })
           .then((resp) => {
             console.log(resp)
-            localStorage.setItem('userToken', resp.data)
+            store.userData = resp.data
             this.$router.push({path: '/home'})
           })
           .catch((error) => {
