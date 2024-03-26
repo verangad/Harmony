@@ -10,7 +10,7 @@ import * as crypto from './encrypt.js'
 import {initializeApp} from "firebase/app";
 import {getFirestore} from "firebase/firestore";
 import {getDatabase} from "firebase/database";
-import {Stave, StaveNote} from "vexflow";
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyB_-k6khbFKGxlEBD7TiWA356FcKOikOOY",
@@ -25,8 +25,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-// Initialize Realtime Database and get a reference to the service
-const database = getDatabase(app);
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -36,9 +34,6 @@ const serve = express();
 
 const server = createServer(serve);
 const io = new Server(server);
-
-let tempStore = []
-
 serve.use(express.json());
 
 // For parsing application/x-www-form-urlencoded
@@ -193,42 +188,6 @@ serve.get('/assets/default.png', (req, res) => {
     res.setHeader('Content-Type', 'image/png')
     res.sendFile(join(__dirname, './collaborator/dist/assets/default.png'));
 });
-
-
-
-
-serve.get('/canvas.html', (req, res) => {
-    res.setHeader('Content-Type', 'text/html')
-    res.sendFile(join(__dirname, 'canvas.html'));
-});
-
-serve.get('/test.js', (req, res) => {
-    res.setHeader('Content-Type', 'text/javascript')
-    res.sendFile(join(__dirname, 'test.js'));
-});
-
-serve.get('/canvas.js', (req, res) => {
-    res.setHeader('Content-Type', 'text/javascript')
-    res.sendFile(join(__dirname, 'canvas.js'));
-});
-
-serve.get('/styles.css', (req, res) => {
-    res.setHeader('Content-Type', 'text/css')
-    res.sendFile(join(__dirname, 'Styles/styles.css'));
-});
-
-serve.get('/querySheet.css', (req, res) => {
-    res.setHeader('Content-Type', 'text/css')
-    res.sendFile(join(__dirname, 'Styles/querySheet.css'));
-});
-
-serve.get('/querySheet.css', (req, res) => {
-    res.setHeader('Content-Type', 'text/css')
-    res.sendFile(join(__dirname, 'Styles/querySheet.css'));
-});
-
-
-
 
 serve.get('/%E2%80%9Dhttps://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.0.0/fabric.min.js%22', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')

@@ -1,7 +1,6 @@
 <script>
 import { Renderer, Stave, Formatter, StaveNote } from 'vexflow';
 import ScoreEditorBar from '../components/ScoreEditorBar.vue'
-import Score from "../components/Score.vue"
 import RowDivider from '@/components/RowDivider.vue';
 import Sidebar from "../components/Sidebar.vue";
 import { socket, state } from "@/socket";
@@ -22,7 +21,6 @@ export default {
     Sidebar,
     ScoreEditorBar,
     RowDivider,
-    Score,
     SideScroller
   },
   data() {

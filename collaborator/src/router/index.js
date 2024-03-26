@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { store } from '../store.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,7 +37,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     let isAuthenticated= false;
-    if(localStorage.getItem('userToken'))
+    if(store.userData)
       isAuthenticated = true;
     else
       isAuthenticated= false;
