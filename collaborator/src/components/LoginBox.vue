@@ -15,8 +15,8 @@ export default {
   },
   methods: {
     tryLogin() {
-      this.$router.push({path: '/home'})
-/*
+     // this.$router.push({path: '/home'})
+
       axios.post("/login", {"acc_name": this.acc_name, "acc_pass": this.acc_pass}, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -29,7 +29,7 @@ export default {
           })
           .catch((error) => {
             console.log(error);
-          })*/
+          })
 
     }
   }
@@ -41,10 +41,8 @@ export default {
     <div class="center">
       <Box>
         <h1>Login</h1>
-        <div>
+        <div class="input_container">
           <input v-model="acc_name" placeholder="Username"/>
-        </div>
-        <div>
           <input v-model="acc_pass" placeholder="Password"/>
         </div>
         <div class="login_buttons">
@@ -59,13 +57,17 @@ export default {
 </template>
 
 <style scoped>
+@import '../assets/base.css';
+h1{
+  font-size: 60px;
+}
+
 .enter_details {
   width: 40%;
 }
-.login_buttons {
-  display: flex;
-  justify-content: center;
-}
+
+
+
 .center {
   display: flex;
   justify-content: center;
@@ -73,18 +75,5 @@ export default {
   text-align: center;
   min-height: calc(100vh - 72px);
 }
-button {
-  background-color: #8dd9f2;
-  height: 50px;
-  height: 50px;
-  width: 30%;
-  border-radius: 20px;
-  border: 1px transparent;
-  transition-duration: 0.4s;
-}
-button:hover {
-  border: 4px solid;
-  background-color: white;
-  color: #8dd9f2;
-}
+
 </style>

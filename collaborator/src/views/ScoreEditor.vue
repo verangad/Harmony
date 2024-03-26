@@ -11,6 +11,7 @@ import ColumnDivider from "../components/ColumnDivider.vue";
 import { store } from '../store.js'
 import axios from "axios";
 import SideScroller from '@/components/SideScroller.vue';
+import html2canvas from "html2canvas";
 
 
 
@@ -53,6 +54,25 @@ export default {
     window.removeEventListener("resize", this.resize);
   },
   methods: {
+    goBack() {
+      html2canvas(this.div).then((canvas)=> {
+        let dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        console.log(dataUrl);
+
+        axios.post("/saveScoreImage", {"id": this.id, "image": dataUrl}, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+            .then((resp) => {
+              console.log("Saved!", resp)
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+      });
+      this.$router.push('/home')
+    },
     saveSheet() {
       let simplifiedScore = JSON.stringify(simplifyStaves(this.staves))
       axios.post("/saveScore", {"id": this.id, "score": simplifiedScore}, {
@@ -308,24 +328,30 @@ export default {
       this.visualizerGroup = this.visualizerContext.openGroup();
 
       this.visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight);
-      let stave = createStave("treble", "4/4", 0, true, 0, 0)
+      let visualizerStave = new Stave(0,0,200)
+
 
         // Draw notes
+      console.log(visualizerStave)
 
-
-      stave.setContext(this.visualizerContext).draw()
-      Formatter.FormatAndDraw(this.visualizerContext, stave, this.visualizerNotes);
+      //visualizerStave.setContext(this.visualizerContext).draw()
+      //Formatter.FormatAndDraw(this.visualizerContext, visualizerStave, this.visualizerNotes);
       this.visualizerContext.closeGroup();
 
+      },
+      addNoteToChord() {
+        this.visualizerNotes.push(ne)
       }
   },
   mounted(){
       socket.connect();
 
-      this.visualizer = document.getElementById("chordVisualizer")
+      this.visualizer = document.getElementById("chord_visualizer")
+
       this.div = document.getElementById("score_canvas")
       let renderer = new Renderer(this.div, Renderer.Backends.SVG)
       let visualizerRenderer = new Renderer(this.visualizer, Renderer.Backends.SVG)
+
 
       renderer.resize(this.div.offsetWidth, this.div.offsetHeight)
       visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight)
@@ -358,42 +384,51 @@ export default {
 <template>
   <div class="score_editor_container">  
     <ScoreEditorBar>
+      <template #back_button>
+        <button @click="goBack">Back</button>
+      </template>
       <template #left>
-        <button @click="moveLeft">Move Left</button>
+        <button class="stave_button" @click="moveLeft">
+          <-
+        </button>
       </template>
       <template #right>
-        <button @click="moveRight">Move Right</button>
+        <button class="stave_button" @click="moveRight">
+          ->
+        </button>
       </template>
       <template #add_stave>
-        <button @click="addStave(false, 'treble', '4/4', 0)">Add Stave</button>
-      </template>
-      <template #delete_stave>
-        <button @click="deleteStave">Delete Stave</button>
+        <button class="stave_button" @click="addStave">
+          +
+        </button>
+        <button class="stave_button" @click="deleteStave">
+          -
+        </button>
       </template>
 
       <template #note_type>
         <button class="letter_button" @click="this.currDuration = 'n'">
-          N
+          <img class="duration_button" src="../assets/4th.png" alt="Normal" />
         </button>
         <button class="letter_button" @click="this.currDuration = 'r'">
-          R
+          <img class="duration_button" src="../assets/rest.png" alt="Rest" />
         </button>
       </template>
 
       <template #durations>
-        <button @click="this.currDuration = '16'">
+        <button class="letter_button" @click="this.currDuration = '16'">
           <img class="duration_button" src="../assets/16th.png" alt="Sixteenth"/>
         </button>
-        <button @click="this.currDuration = '8'">
+        <button class="letter_button" @click="this.currDuration = '8'">
           <img class="duration_button" src="../assets/8th.png" alt="Eighth" />
         </button>
-        <button @click="this.currDuration = '4'">
+        <button class="letter_button" @click="this.currDuration = '4'">
           <img class="duration_button" src="../assets/4th.png" alt="Quarter" />
         </button>
-        <button @click="this.currDuration = '2'">
+        <button class="letter_button" @click="this.currDuration = '2'">
           <img class="duration_button" src="../assets/half.png" alt="Half" />
         </button>
-        <button @click="this.currDuration = '1'">
+        <button class="letter_button" @click="this.currDuration = '1'">
           <img class="duration_button" src="../assets/full.png" alt="Full"  />
         </button>
       </template>
@@ -439,39 +474,46 @@ export default {
 
       <template #accidental>
         <button class="letter_button" @click="">
-          Sha
+          <img class="duration_button" src="../assets/Sharp.png" alt="Sharp" />
         </button>
         <button class="letter_button" @click="">
-          Fla
+          <img class="duration_button" src="../assets/Flat.png" alt="Flat" />
         </button>
       </template>
 
       <template #edit_note>
-        <button @click="editNote">Edit Note</button>
+        <button class="edit_button" @click="editNote">Edit Note</button>
       </template>
     </ScoreEditorBar>
     <ColumnDivider>
       <div id="score_canvas" class="score_container">
       </div>
+
       <Sidebar>
         <template #addButton>
-          <button class="letter_button" @click="this.currNote = 'c'">
+          <button @click="addNoteToChord">
           Add Note
           </button>
         </template>
-        <div id="chordVisualizer" class="visualizer">
 
-</div>
+
+
         <template #visualizer>
-
+          <div id="chord_visualizer" class="visualizer">
+          </div>
         </template>
+
         
-        
-          <template #submitChord>
-          <button class="letter_button" @click="this.currNote = 'a'">
+        <template #submitChord>
+          <button  @click="">
             Submit
           </button>
-          </template>
+        </template>
+        <template #clearChord>
+          <button  @click="">
+            Clear
+          </button>
+        </template>
         
       </Sidebar>
     </ColumnDivider>
@@ -480,20 +522,36 @@ export default {
 </template>
 
 <style scoped>
+@import '../assets/base.css';
+@import '../assets/scrollbar.css';
+
 .letter_button {
   width: 55px;
   height: 50px;
+  border: 1px solid var(--background_color);
+  background-color: var(--nav_color);
+  color: white;
+  transition: 0.2s;
+  font-size:20px;
+}
+.edit_button {
+  width: 105px;
+}
+.letter_button:hover {
+  background-color: var(--nav_color_hover);
 }
 
 .duration_button {
+  margin-top: 2px;
   width: 40px;
   height: 40px;
+  filter: invert();
 }
 
 .score_container {
   background-color: white;
   width: 80vw;
-  height:  calc(100vh - 100px);
+  height:  calc(100vh - 70px);
   overflow-y: scroll;
 }
 
@@ -504,7 +562,26 @@ export default {
 
 .visualizer {
   width: 100%;
-  height:100px;
+  height: 100px;
+}
+
+.letter_button {
+
+}
+
+.stave_button {
+  width: 55px;
+  height: 50px;
+  border: 1px solid var(--background_color);
+  background-color: var(--nav_color);
+  color: white;
+  transition: 0.2s;
+  font-size:30px;
+}
+
+.stave_button:hover {
+
+  background-color: var(--nav_color_hover);
 }
 
 </style>

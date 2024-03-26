@@ -73,6 +73,13 @@ export async function createScore(db, username, name, score, pass) {
     await updateDoc(userRef, { scores: userScores })
 }
 
+
+export async function saveImage(db, id, image) {
+    // Set image
+    const scoreRef = doc(db, "scores", id.toString())
+    await updateDoc(scoreRef, { image: image })
+}
+
 export async function saveScore(db, id, score) {
     // Set score
     const scoreRef = doc(db, "scores", id.toString())

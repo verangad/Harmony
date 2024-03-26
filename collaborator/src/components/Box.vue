@@ -21,16 +21,18 @@ export default {
   border-color: white;
   color: black;
   width: 25vw;
-  height: 600px;
+  height: 500px;
   padding-bottom: 20px;
+  display:flex;
   flex-direction: column;
-  align-items: stretch;
+  justify-content: space-between;
+
 }
 
 .box_container::before {
   position: absolute;
   content: '';
-  height: 600px;
+  height: 500px;
   width: 25vw;
   display: block;
   z-index: -1;

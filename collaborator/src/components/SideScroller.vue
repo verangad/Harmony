@@ -1,4 +1,5 @@
 <script>
+
 export default {
   name: "SideScroller"
 }
@@ -15,32 +16,13 @@ export default {
 
 <style scoped>
 
-::-webkit-scrollbar {
-  height: 5px;
-  width: 4px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
 .sidescroll_container {
   background-color: white;
   color: black;
   width: 200px;
   overflow: auto;
   white-space: nowrap;
+  border: 2px solid black;
 }
 
 @media (max-width: 1024px) {

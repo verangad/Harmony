@@ -20,7 +20,8 @@ export default {
 </template>
 
 <style scoped>
-
+@import '../assets/base.css';
+@import '../assets/scrollbar.css';
 .score_grid {
   display: grid;
   width: 100%;
@@ -37,12 +38,14 @@ export default {
   color: white;
   display: flex;
   justify-content: center;
-  background: black;
+  background: white;
+  border: 5px solid var(--secondary_colour);
+  border-radius: 20px 20px 0px 0px;
 }
 
 .score_container {
-  background: #ffffff;
-  padding: 10px;
+  background: (1, 1, 1, 0.4);
+
   color: black;
   width: 70vw;
   height: 100vh;

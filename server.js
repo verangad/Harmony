@@ -142,12 +142,55 @@ serve.get('/assets/store.js', (req, res) => {
     res.sendFile(join(__dirname, './collaborator/dist/assets/store.js'));
 });
 
-
-
 serve.get('/assets/axios.js', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')
     res.sendFile(join(__dirname, './collaborator/dist/assets/axios.js'));
 });
+
+
+
+serve.get('/assets/full.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/full.png'));
+});
+
+serve.get('/assets/half.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/half.png'));
+});
+
+serve.get('/assets/4th.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/4th.png'));
+});
+
+serve.get('/assets/8th.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/8th.png'));
+});
+
+serve.get('/assets/16th.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/16th.png'));
+});
+
+serve.get('/assets/sharp.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/sharp.png'));
+});
+
+serve.get('/assets/flat.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/flat.png'));
+});
+
+serve.get('/assets/rest.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/rest.png'));
+});
+
+
+
 
 serve.get('/canvas.html', (req, res) => {
     res.setHeader('Content-Type', 'text/html')
@@ -173,6 +216,12 @@ serve.get('/querySheet.css', (req, res) => {
     res.setHeader('Content-Type', 'text/css')
     res.sendFile(join(__dirname, 'Styles/querySheet.css'));
 });
+
+serve.get('/querySheet.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css')
+    res.sendFile(join(__dirname, 'Styles/querySheet.css'));
+});
+
 
 
 
@@ -261,6 +310,15 @@ serve.post('/saveScore', async function(req, res) {
     res.status(200)
     res.end()
 });
+
+serve.post('/saveScoreImage', async function(req, res) {
+    console.log({requestBody: req.body})
+    await fb.saveImage(db, req.body.id, req.body.image)
+    console.log("Saved")
+    res.status(200)
+    res.end()
+});
+
 
 
 serve.post('/joinScore', async function(req, res) {

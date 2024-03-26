@@ -12,14 +12,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/create',
-      name: 'create',
-      component: () => import('../views/Create.vue'),
-      meta: {
-        requiresAuth: false
-      }
-    },
-    {
       path: '/home',
       name: 'home',
       // route level code-splitting

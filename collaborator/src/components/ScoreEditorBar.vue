@@ -1,12 +1,10 @@
 <script>
 import ColumnDivider from "./ColumnDivider.vue";
-import Dropdown from "./Dropdown.vue";
 import SideScroller from "./SideScroller.vue";
 export default {
   name: "ScoreEditorBar",
   components: {
     SideScroller,
-    Dropdown
   }
 }
 
@@ -16,7 +14,8 @@ export default {
   <nav>
     <div class="nav_item">
       <div class="left_buttons">
-        <button @click="this.$router.push('/home')">Back</button>
+        <slot name="back_button">
+        </slot>
         <div class="move_buttons">
           <slot name="left">
           </slot>
@@ -60,6 +59,7 @@ export default {
 
         </slot>
       </SideScroller>
+
     </div>
 
     <div class="nav_item">
@@ -78,20 +78,22 @@ export default {
 
 
 <style scoped>
-
+@import '../assets/base.css';
+@import '../assets/scrollbar.css';
 .left_buttons {
   width: 350px;
   display: flex;
-  background: #181818;
+  background: var(--nav_color);
   flex-wrap: nowrap;
   justify-content: space-between;
+  overflow: visible;
 }
 .move_buttons {
 
 }
 
 nav {
-  overflow: auto;
+  overflow: scroll;
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
   background: #181818;
@@ -112,10 +114,12 @@ nav a {
 @media (min-width: 1024px) {
 
   nav {
+    overflow-y: scroll;
+    background: var(--nav_color);
     text-align: left;
     font-size: 1rem;
     padding: 0 0;
-    margin-top: 1rem;
+    margin-top: 0rem;
   }
 }
 .nav_item {
@@ -130,10 +134,11 @@ nav a {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible;
 }
 
 .button_container {
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
@@ -141,25 +146,5 @@ nav a {
 }
 
 
-
-::-webkit-scrollbar {
-  height: 5px;
-  width: 4px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
 
 </style>

@@ -4,10 +4,10 @@
 import SetRoomBox from "./SetRoomBox.vue";
 import RowDivider from "./RowDivider.vue";
 import SideScroller from "./SideScroller.vue";
-import ChordBuilder from '../components/ChordBuilder.vue';
+
 export default {
 name: "Sidebar",
-  components: {RowDivider, SetRoomBox, ChordBuilder, SideScroller}
+  components: {RowDivider, SetRoomBox, SideScroller}
 }
 </script>
 
@@ -15,9 +15,9 @@ name: "Sidebar",
  <div class="sidebar">
    <RowDivider>
     
-     <div class="temp">
+     <div class="chord_builder">
       <RowDivider>
-      
+        <h1>Chord Builder</h1>
         <div>
           <slot name="addButton">
 
@@ -28,13 +28,10 @@ name: "Sidebar",
 
           </slot>
         </div>
-        <div>
+        <div class="login_buttons">
           <slot name="submitChord">
 
           </slot>
-
-        </div>
-        <div>
           <slot name="clearChord">
 
           </slot>
@@ -49,19 +46,40 @@ name: "Sidebar",
 </template>
 
 <style scoped>
-.temp {
+@import '../assets/scrollbar.css';
+
+.chord_builder {
   background-color: white;
-  height: 400px;
+  height: calc(60vh - 70px);
   width: 20vw;
 }
 .sidebar{
-  overflow-x: scroll;
+  overflow: scroll;
   width: 20vw;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 70px);
   overflow-y: scroll;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
 }
+
+@media (max-width: 1024px) {
+  .sidebar{
+    overflow: scroll;
+    width: 300px;
+    height: calc(100vh - 70px);
+    overflow-y: scroll;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .chord_builder {
+    background-color: white;
+    height: calc(60vh - 70px);
+    width: 300px;
+  }
+}
+
 </style>

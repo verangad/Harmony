@@ -44,14 +44,10 @@ export default {
         <h1>Collaborate Score</h1>
         <div>
           <input v-model="room_name" placeholder="Room Name"/>
-        </div>
-        <div>
           <input v-model="room_pass" placeholder="Password"/>
         </div>
-        <div>
+        <div class="login_buttons">
           <button type="button" @click="tryJoin">Submit</button>
-        </div>
-        <div>
           <button type="button" @click="">Collaborate</button>
         </div>
       </Box>
@@ -59,6 +55,9 @@ export default {
 </template>
 
 <style scoped>
+h1{
+  font-size: 45px;
+}
 .join_container {
   width: 30vw;
   display: flex;

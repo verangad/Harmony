@@ -37,7 +37,7 @@
         this.showCanvas = true
       },
       getScores() {
-        /*
+
         let login = localStorage.getItem('userToken')
         axios.post("/getScores", {"user": login}, {
           headers: {
@@ -46,7 +46,7 @@
         })
             .then((resp) => {
 
-              console.log(resp)
+              console.log("DSFD", resp)
 
               this.scores = resp.data
 
@@ -54,7 +54,7 @@
             })
             .catch((error) => {
               console.log(error);
-            })*/
+            })
       },
       createScore(){
         let login = localStorage.getItem('userToken')
@@ -88,16 +88,24 @@
   <RowDivider>
     <Navigation>
       <template #create_score>
-        <button @click="createScore">Create Score</button>
+        <button class="createScore" @click="createScore">Create Score</button>
       </template>
-      <button type="button" @click="swapToCollaborate">Collaborate</button>
-      <button type="button" @click="swapToCanvas">View Canvas</button>
     </Navigation>
     <ColumnDivider>
       <ScoreList>
         <ul v-for="score in scores" :key="score.id">
           <ScoreListItem :scoreData="score">
-            <button @click="editScore(score)">{{score.name}} {{score.id}}</button>
+            <template #image>
+              <img id="prev_img" class="preview_img" :src="score.image">
+            </template>
+            <template #button>
+              <button class="score_list_button" @click="editScore(score)">Edit</button>
+            </template>
+            <template #score_details>
+
+              {{ score.name }}{{ score.id }}
+
+            </template>
           </ScoreListItem>
         </ul>
       </ScoreList>
@@ -113,5 +121,13 @@
 </template>
 
 <style>
+@import '../assets/base.css';
+.score_list_button {
+  width: 100%;
+}
 
+.preview_img {
+  width: 146px;
+  height: 146px;
+}
 </style>
