@@ -723,7 +723,7 @@ export default {
         </template>
         <template #chordAccidental>
           <button class="accidental_button" @click="this.chordAccidental = ''">
-            <img class="duration_button" src="../assets/f.png" alt="Natural" />
+            <img class="duration_button" src="../assets/flat.png" alt="Natural" />
           </button>
           <button class="letter_button" @click="this.chordAccidental = '#'">
             <img class="duration_button" src="../assets/sharp.png" alt="Sharp" />
