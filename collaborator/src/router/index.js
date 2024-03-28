@@ -20,7 +20,7 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/Home.vue'),
       meta: {
-        requiresAuth: false
+        requiresAuth: true
       }
     },
     {
@@ -28,7 +28,7 @@ const router = createRouter({
       name: 'scoreeditor',
       component: () => import('../views/ScoreEditor.vue'),
       meta: {
-        requiresAuth: false
+        requiresAuth: true
       }
     }
   ]
@@ -42,11 +42,13 @@ router.beforeEach((to, from, next) => {
     else
       isAuthenticated= false;
     if(isAuthenticated) {
-      next(); // allow to enter route
-    } else{
-      next('/login'); // go to '/login';
+      next();
     }
-  } else {
+    else {
+      next('/login');
+    }
+  }
+  else {
     next();
   }
 });

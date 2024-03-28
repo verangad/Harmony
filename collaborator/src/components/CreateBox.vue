@@ -28,10 +28,9 @@ export default {
     }
   }
 }
+
 </script>
-
 <template>
-
   <div class="enter_details">
     <div class="center">
       <Box>
@@ -47,7 +46,6 @@ export default {
         <div class="login_buttons">
           <button type="button" @click="tryCreate">Submit</button>
           <slot>
-
           </slot>
         </div>
       </Box>
@@ -57,13 +55,16 @@ export default {
 
 
 <style scoped>
+
 .enter_details {
   width: 40%;
 }
+
 .login_buttons {
   display: flex;
   justify-content: center;
 }
+
 .center {
   display: flex;
   justify-content: center;
@@ -71,18 +72,20 @@ export default {
   text-align: center;
   min-height: calc(100vh - 72px);
 }
+
 button {
   background-color: #8dd9f2;
-  height: 50px;
   height: 50px;
   width: 30%;
   border-radius: 20px;
   border: 1px transparent;
   transition-duration: 0.4s;
 }
+
 button:hover {
   border: 4px solid;
   background-color: white;
   color: #8dd9f2;
 }
+
 </style>

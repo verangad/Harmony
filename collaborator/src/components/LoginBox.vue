@@ -31,7 +31,6 @@ export default {
           .catch((error) => {
             console.log(error);
           })
-
     }
   }
 }
@@ -59,6 +58,7 @@ export default {
 
 <style scoped>
 @import '../assets/base.css';
+
 h1{
   font-size: 60px;
 }
@@ -66,8 +66,6 @@ h1{
 .enter_details {
   width: 40%;
 }
-
-
 
 .center {
   display: flex;

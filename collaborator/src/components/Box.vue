@@ -40,5 +40,4 @@ export default {
   transform: rotate(4deg);
 }
 
-
 </style>

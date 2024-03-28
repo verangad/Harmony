@@ -1,10 +1,7 @@
 <script>
-  import { loadScript } from "vue-plugin-load-script"
-  import {collection} from "firebase/firestore/lite"
   import SpacerContainer from "../components/SpacerContainer.vue"
   import Navigation from '../components/Navigation.vue'
   import ScoreList from '../components/ScoreList.vue'
-  import Canvas from '../components/Canvas.vue'
   import LoginRoom from '../components/LoginRoom.vue'
   import RowDivider from "@/components/RowDivider.vue"
   import ColumnDivider from "@/components/ColumnDivider.vue"
@@ -18,7 +15,6 @@
     components: {SpacerContainer,
     Navigation,
     ScoreList,
-    Canvas,
     LoginRoom,
     RowDivider,
     ColumnDivider,
@@ -32,12 +28,6 @@
       }
     },
     methods: {
-      swapToCollaborate(){
-        this.showCanvas = false
-      },
-      swapToCanvas(){
-        this.showCanvas = true
-      },
       getScores() {
 
         let login = store.userData
@@ -110,9 +100,7 @@
           </ScoreListItem>
         </ul>
       </ScoreList>
-
-      <!-- <Canvas v-if="this.showCanvas" /> -->
-      <LoginRoom v-if="!this.showCanvas" />
+      <LoginRoom />
     </ColumnDivider>
   </RowDivider>
 
