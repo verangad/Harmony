@@ -9,8 +9,8 @@ import * as crypto from './encrypt.js'
 
 import {initializeApp} from "firebase/app";
 import {getFirestore} from "firebase/firestore";
-import {getDatabase} from "firebase/database";
 
+const port = process.env.PORT || 9999;
 
 const firebaseConfig = {
     apiKey: "AIzaSyB_-k6khbFKGxlEBD7TiWA356FcKOikOOY",
@@ -352,4 +352,4 @@ serve.post('/create', async function (req, res) {
     }
 });
 
-server.listen(9999,'localhost', () => console.log("listening"))
+server.listen(port,'localhost', () => console.log("listening"))
