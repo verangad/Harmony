@@ -47,8 +47,7 @@ export default {
       visualizerNotes: ["c/4", "e/4", "g/4"],
       visualizerGroup: null,
       accidental: "",
-      chordAccidental: "",
-      ties: []
+      chordAccidental: ""
 
       }
   },
@@ -80,7 +79,7 @@ export default {
     },
     saveSheet() {
       let simplifiedScore = JSON.stringify(simplifyStaves(this.staves))
-      axios.post("/saveScore", {"id": this.id, "score": simplifiedScore}, {
+      axios.post("/saveScore", {"id": this.id, "score": simplifiedScore }, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -129,9 +128,7 @@ export default {
         }
 
       }
-      this.ties.forEach((t) => {
-        t.setContext(this.context).draw();
-      });
+
       this.context.closeGroup();
     },
     resize()
@@ -243,7 +240,7 @@ export default {
       // If note is same duration -> simply replace it
       if(selectedNoteDuration === newNoteDuration) {
 
-        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: keyArr, duration: dur })
+        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: keyArr, duration: dur.concat(this.currType) })
 
       }
       // If new note is smaller than the selected, split it up
@@ -257,7 +254,7 @@ export default {
 
 
 
-        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: keyArr, duration: dur })
+        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: keyArr, duration: dur.concat(this.currType) })
 
         // Insert same of first note as rests until there is no room
         for(remainder; remainder > 0; remainder -= newNoteDuration){
@@ -304,20 +301,20 @@ export default {
 
         // Fits in
         if(remainder === 0) {
-          this.staves[editingStave].notes[editingNote] = new StaveNote({keys: keyArr, duration: newNoteDurationString})
+          this.staves[editingStave].notes[editingNote] = new StaveNote({keys: keyArr, duration: newNoteDurationString.concat(this.currType)})
           for(let i = 0; i < numNotesToCut - 1; i++){
             this.staves[editingStave].notes.splice(editingNote + 1, 1)
           }
         }
         else if(remainder > 0 && currNote <= numNotes) {
-          this.staves[editingStave].notes[editingNote] = new StaveNote({keys: keyArr, duration: newNoteDurationString})
+          this.staves[editingStave].notes[editingNote] = new StaveNote({keys: keyArr, duration: newNoteDurationString.concat(this.currType)})
           for(let i = 0; i < numNotesToCut - 1; i++){
             this.staves[editingStave].notes.splice(editingNote + 1, 1)
           }
           let remainderString = (1.0/remainder).toString()
           let newRemainderString = (1.0/newRemainder).toString()
           this.staves[editingStave].notes.splice(editingNote + 1, 1)
-          this.staves[editingStave].notes.splice(editingNote + 1, 0, new StaveNote({keys: oldKeys, duration: newRemainderString}))
+          this.staves[editingStave].notes.splice(editingNote + 1, 0, new StaveNote({keys: oldKeys, duration: newRemainderString.concat(this.currType)}))
 
 
         }
@@ -334,15 +331,6 @@ export default {
           for(let i = 0; i < numNotesToCut; i++){
             let currDur = this.staves[editingStave].notes[editingNote].duration
             this.staves[editingStave].notes[editingNote + i] = new StaveNote({keys: keyArr, duration: currDur})
-
-            if(i > 0){
-              this.ties.push(new StaveTie({
-                first_note:  this.staves[editingStave].notes[editingNote + i - 1],
-                last_note:  this.staves[editingStave].notes[editingNote + i],
-                first_indices: [0],
-                last_indices: [0],
-              }))
-            }
           }
           let currDur = 0
           if (this.staves[editingStave + 1].notes[0].duration === "q") {
@@ -361,12 +349,7 @@ export default {
             // Equal
             if(remainder >= currDur){
               this.staves[editingStave + 1].notes[counter] = new StaveNote({keys: keyArr, duration: this.staves[editingStave + 1].notes[0].duration})
-              this.ties.push(new StaveTie({
-                first_note:  this.staves[editingStave].notes[this.staves[editingStave].notes.length - 1],
-                last_note:  this.staves[editingStave + 1].notes[counter],
-                first_indices: [0],
-                last_indices: [0],
-              }))
+
               remainder -= currDur
               counter++
             }
@@ -438,10 +421,12 @@ export default {
       },
       updateScore(initialStave, score) {
         this.staves = score
+
         if(!initialStave) {
           this.context.svg.removeChild(this.group)
           this.visualizerContext.svg.removeChild(this.visualizerGroup)
         }
+
         if(this.staves.length > 0){
           if(this.staves[0].notes.length > 0){
             this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
@@ -534,6 +519,7 @@ export default {
     let recScore = store.score
     this.id = recScore.id
 
+
     // Join room
     socket.emit('joinRoom', this.id);
 
@@ -543,8 +529,8 @@ export default {
 
 
     socket.on('scoreChangeBroadcast', (msg) => {
-    let rehydratedStaves = rehydrateStaves(msg, this.context)
-    this.updateScore(false, rehydratedStaves)
+      let rehydratedStaves = rehydrateStaves(msg, this.context)
+      this.updateScore(false, rehydratedStaves)
     })
   }
 }

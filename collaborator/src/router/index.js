@@ -20,7 +20,7 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/Home.vue'),
       meta: {
-        requiresAuth: true
+        requiresAuth: false
       }
     },
     {
@@ -28,7 +28,7 @@ const router = createRouter({
       name: 'scoreeditor',
       component: () => import('../views/ScoreEditor.vue'),
       meta: {
-        requiresAuth: true
+        requiresAuth: false
       }
     }
   ]

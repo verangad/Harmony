@@ -26,7 +26,7 @@ export default {
 }
 
 </script>
-
+<meta content="width=device-width, initial-scale=1" name="viewport" />
 <template>
   <RowDivider>
     <LoginLogo />
@@ -36,8 +36,9 @@ export default {
           <div class="info_box">
             <RowDivider>
               <div>
-                <h1 class="details_header">Test.</h1>
+                <h1 class="details_header">Harmony.</h1>
                 <h3>Collaborative Score Editor.</h3>
+                <h5>By Dillan Veranga.</h5>
               </div>
             </RowDivider>
           </div>
@@ -48,7 +49,7 @@ export default {
           </div>
         </div>
         <LoginBox v-if="is_login">
-          <button class="log_button" type="button" @click="this.is_login=false">Create Account</button>
+          <button type="button" @click="this.is_login=false">Create Account</button>
         </LoginBox>
         <CreateBox v-if="!is_login">
           <button type="button" @click="this.is_login=true">Login</button>
@@ -63,6 +64,11 @@ export default {
 h1 {
   font-weight: bold;
 }
+
+h5 {
+  margin-block-start: 0.5em;
+}
+
 .img_container {
   display: flex;
   justify-content: center;
@@ -102,13 +108,21 @@ h1 {
   padding: 20px;
 }
 
-
-
 .info {
   display: flex;
   align-items: center;
-  width:60%;
+  width: 200px;
 }
+
+@media (min-width: 1000px) {
+  .info {
+    display: flex;
+    align-items: center;
+    width:60%;
+  }
+
+}
+
 
 
 </style>

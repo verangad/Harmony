@@ -8,7 +8,7 @@ export default {
 <template>
   <div class="logo_bar">
     <div>
-      <h1>Test</h1>
+      <h1>Harmony Collaborator</h1>
     </div>
   </div>
 </template>

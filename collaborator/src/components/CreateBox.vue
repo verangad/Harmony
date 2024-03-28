@@ -55,15 +55,11 @@ export default {
 
 
 <style scoped>
-
+@import '../assets/base.css';
 .enter_details {
   width: 40%;
 }
 
-.login_buttons {
-  display: flex;
-  justify-content: center;
-}
 
 .center {
   display: flex;
@@ -73,14 +69,6 @@ export default {
   min-height: calc(100vh - 72px);
 }
 
-button {
-  background-color: #8dd9f2;
-  height: 50px;
-  width: 30%;
-  border-radius: 20px;
-  border: 1px transparent;
-  transition-duration: 0.4s;
-}
 
 button:hover {
   border: 4px solid;

@@ -45,7 +45,7 @@ io.on('connection', (socket) => {
 
 
     // Join Room
-    socket.on("joinRoom", (msg) => {
+    socket.on("joinRoom", (msg, ties) => {
         socket.join(msg);
         console.log("Joined room", msg)
 

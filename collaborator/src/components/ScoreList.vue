@@ -28,9 +28,11 @@ export default {
   display: grid;
   width: 100%;
   height: calc(100% - 60px);
-  grid-template-columns: auto auto auto auto;
-  justify-content: start;
 
+  justify-content: start;
+  grid-template-columns: auto auto auto auto auto auto auto;
+  grid-auto-rows: 290px;
+  grid-gap:10px;
   overflow-y: scroll;
 }
 
@@ -46,7 +48,7 @@ export default {
 }
 
 .text{
-font-size: 30px;
+  font-size: 30px;
 }
 .score_container {
   background: (1, 1, 1, 0.4);
@@ -56,6 +58,86 @@ font-size: 30px;
   height: 100vh;
   border-radius: 20px;
   flex-direction: column;
+
+}
+
+
+
+@media (max-width: 1800px) {
+  .score_grid {
+    display: grid;
+    width: 100%;
+    height: calc(100% - 60px);
+    grid-template-columns: auto auto auto auto auto;
+    grid-auto-rows: 290px;
+    justify-content: start;
+
+
+  }
+}
+
+
+@media (max-width: 1600px) {
+  .score_grid {
+    display: grid;
+    width: 100%;
+    height: calc(100% - 60px);
+    grid-template-columns: auto auto auto auto;
+    grid-auto-rows: 290px;
+    justify-content: start;
+
+
+  }
+}
+
+@media (max-width: 1300px) {
+  .score_grid {
+    display: grid;
+    width: 100%;
+    height: calc(100% - 60px);
+    grid-template-columns: auto auto auto;
+    grid-auto-rows: 290px;
+    justify-content: start;
+
+
+  }
+
+}
+
+@media (max-width: 1000px) {
+  .score_container {
+    background: (1, 1, 1, 0.4);
+    color: black;
+    width: 70vw;
+    height: 100vh;
+    border-radius: 20px;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: scroll;
+
+  }
+
+  .score_grid {
+    display: grid;
+    width: 100%;
+    height: calc(100% - 60px);
+    grid-template-columns: auto auto;
+    grid-auto-rows: 290px;
+    justify-content: start;
+
+
+  }
+}
+
+@media (max-width: 800px) {
+  .score_grid {
+    display: grid;
+    width: 100%;
+    height: calc(100% - 60px);
+    grid-template-columns: auto;
+    grid-auto-rows: 290px;
+    justify-content: start;
+  }
 
 }
 </style>

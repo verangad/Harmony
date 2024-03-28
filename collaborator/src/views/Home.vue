@@ -24,7 +24,7 @@
       return { 
         canvas: null,
         showCanvas: false,
-        scores: ["test"]
+        scores: ["test", "test", "test", "test", "test", "test", "test"]
       }
     },
     methods: {
@@ -55,7 +55,7 @@
 
             })
             .catch((error) => {
-              alert("Score and Password does not exist.");
+              alert("You are not connected.");
               console.log(error);
             })
       },
