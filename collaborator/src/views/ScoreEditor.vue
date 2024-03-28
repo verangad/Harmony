@@ -644,13 +644,13 @@ export default {
 
       <template #accidental>
         <button class="accidental_button" @click="this.accidental = ''">
-          <img class="duration_button" src="../assets/Flat.png" alt="Natural" />
+          <img class="duration_button" src="../assets/flat.png" alt="Natural" />
         </button>
         <button class="accidental_button" @click="this.accidental = '#'">
-          <img class="duration_button" src="../assets/Sharp.png" alt="Sharp" />
+          <img class="duration_button" src="../assets/sharp.png" alt="Sharp" />
         </button>
         <button class="accidental_button" @click="this.accidental = 'b'">
-          <img class="duration_button" src="../assets/Flat.png" alt="Flat" />
+          <img class="duration_button" src="../assets/flat.png" alt="Flat" />
         </button>
       </template>
 
@@ -723,13 +723,13 @@ export default {
         </template>
         <template #chordAccidental>
           <button class="accidental_button" @click="this.chordAccidental = ''">
-            <img class="duration_button" src="../assets/Flat.png" alt="Natural" />
+            <img class="duration_button" src="../assets/f.png" alt="Natural" />
           </button>
           <button class="letter_button" @click="this.chordAccidental = '#'">
-            <img class="duration_button" src="../assets/Sharp.png" alt="Sharp" />
+            <img class="duration_button" src="../assets/sharp.png" alt="Sharp" />
           </button>
           <button class="letter_button" @click="this.chordAccidental = 'b'">
-            <img class="duration_button" src="../assets/Flat.png" alt="Flat" />
+            <img class="duration_button" src="../assets/flat.png" alt="Flat" />
           </button>
         </template>
         <template #addButton>
