@@ -10,7 +10,7 @@ import * as crypto from './encrypt.js'
 import {initializeApp} from "firebase/app";
 import {getFirestore} from "firebase/firestore";
 
-const port = process.env.PORT || 9999;
+const port = 10000;
 
 const firebaseConfig = {
     apiKey: "AIzaSyB_-k6khbFKGxlEBD7TiWA356FcKOikOOY",
