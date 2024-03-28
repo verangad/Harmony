@@ -1,0 +1,35 @@
+/* Styles for the Sidescroller component in the Score Editor page */
+
+/* Scrolling sidescroller container styles */
+.sidescroll_container {
+    background-color: white;
+    color: black;
+    width: 200px;
+    overflow: auto;
+    white-space: nowrap;
+    border: 2px solid black;
+}
+
+/* Scrolling sidescroller container item styles */
+.sidescroll_container a {
+    display: inline-block;
+
+    text-align: center;
+    padding: 14px;
+    text-decoration: none;
+}
+
+.sidescroll_container a:hover {
+    background-color: white;
+}
+
+/* Different styles for smaller screens */
+@media (max-width: 1000px) {
+    .sidescroll_container {
+        background-color: white;
+        color: black;
+        width: 10vw;
+        overflow: auto;
+        white-space: nowrap;
+    }
+}

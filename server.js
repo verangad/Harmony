@@ -191,19 +191,9 @@ serve.get('/assets/rest.png', (req, res) => {
 
 serve.get('/assets/default.png', (req, res) => {
     res.setHeader('Content-Type', 'image/png')
-    res.sendFile(join(__dirname, './collaborator/dist/assets/default.png'));
+    res.sendFile(join(__dirname, './default.png'));
 });
 
-serve.get('/%E2%80%9Dhttps://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.0.0/fabric.min.js%22', (req, res) => {
-    res.setHeader('Content-Type', 'text/javascript')
-    const url = "https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.0.0/fabric.min.js"
-    fetch(url)
-        .then( r => r.text() )
-        .then( (t) => {
-            res.write(t)
-            res.end()
-        })
-});
 
 serve.get('/socket.io', (req, res) => {
     res.setHeader('Content-Type', 'text/javascript')

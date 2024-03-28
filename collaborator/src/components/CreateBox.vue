@@ -1,35 +1,40 @@
+<!-- CreateBox: Used for the Create Account input -->
 <script>
-import Box from '../components/Box.vue'
-import axios from "axios";
-export default {
-  name: "CreateBox",
-  components: {
-    Box
-  },
-  data() {
-    return {
-      create_name: "",
-      create_pass: ""
-    };
-  },
-  methods: {
-    tryCreate(){
-      axios.post("/create",{ "create_name": this.create_name, "create_pass": this.create_pass }, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      })
-          .then((resp) => {
-            alert("Account successfully created.")
-          })
-          .catch((error) => {
-            alert("Account already exists.")
-          })
+  import Box from '../components/Box.vue'
+  import axios from "axios";
+
+  export default {
+    name: "CreateBox",
+    components: {
+      Box
+    },
+    data() {
+      // Input Name and Input Password to create account
+      return {
+        create_name: "",
+        create_pass: ""
+      }
+    },
+    methods: {
+      // Try and create an account with the given name and password
+      tryCreate(){
+        // Send POST request to server
+        axios.post("/create",{ "create_name": this.create_name, "create_pass": this.create_pass }, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+        .then((resp) => {
+          alert("Account successfully created.")
+        })
+        .catch((error) => {
+          alert("Account already exists.")
+        })
+      }
     }
   }
-}
-
 </script>
+
 <template>
   <div class="enter_details">
     <div class="center">
@@ -53,27 +58,18 @@ export default {
   </div>
 </template>
 
-
 <style scoped>
-@import '../assets/base.css';
-.enter_details {
-  width: 40%;
-}
+  @import '../assets/base.css';
 
+  .enter_details {
+    width: 40%;
+  }
 
-.center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  min-height: calc(100vh - 72px);
-}
-
-
-button:hover {
-  border: 4px solid;
-  background-color: white;
-  color: #8dd9f2;
-}
-
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: calc(100vh - 72px);
+  }
 </style>

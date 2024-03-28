@@ -1,0 +1,70 @@
+/* Styles for the Navigation Bar in the Score Editor page */
+
+/* Nav Styles */
+nav {
+    overflow: scroll;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    background: var(--nav_color);
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+/* Nav Text Styles */
+nav a {
+    float: left;
+    font-size: 16px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+}
+
+/* Nav left side button Styles */
+.left_buttons {
+    width: 350px;
+    display: flex;
+    background: var(--nav_color);
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    overflow: visible;
+}
+
+/* Nav item Styles */
+.nav_item {
+    font-size: 16px;
+    border: none;
+    outline: none;
+    color: white;
+    padding: 10px 10px;
+    background-color: inherit;
+    font-family: inherit;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+}
+
+/* Nav Text Styles */
+.text {
+    color: #a8a8a8;
+    font-size: 12px;
+}
+
+/* Nav Dual Button (side by side) container */
+.dual_button_container{
+    display: flex;
+    width: fit-content;
+}
+
+/* Nav Styles for larger screens */
+@media (min-width: 1000px) {
+    nav {
+        overflow-y: scroll;
+        background: var(--nav_color);
+        text-align: left;
+        font-size: 1rem;
+        padding: 0 0;
+        margin-top: 0rem;
+    }
+}

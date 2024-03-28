@@ -1,7 +1,8 @@
+<!-- ColumnDivider: Used for dividing a div into columns -->
 <script>
-export default {
-  name: "ColumnDivider"
-}
+  export default {
+    name: "ColumnDivider"
+  }
 </script>
 
 <template>
@@ -12,9 +13,9 @@ export default {
 </template>
 
 <style scoped>
-.divider {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
+  .divider {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
 </style>

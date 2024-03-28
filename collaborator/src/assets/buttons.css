@@ -1,4 +1,5 @@
-.letter_button {
+/* Score Editor buttons */
+.option_button {
     width: 55px;
     height: 50px;
     border: 1px solid var(--background_color);
@@ -8,85 +9,22 @@
     font-size:20px;
 }
 
-.letter_button:hover {
+.option_button:hover {
     background-color: var(--nav_color_hover);
 }
 
-.letter_button:focus {
+/* Invert button when clicked */
+.option_button:focus {
     filter: invert();
 }
+
 .edit_button {
     width: 105px;
 }
-.duration_button {
+
+.image_button {
     margin-top: 2px;
     width: 40px;
     height: 40px;
-    filter: invert();
-}
-
-.dur_button {
-    width: 55px;
-    height: 50px;
-    border: 1px solid var(--background_color);
-    background-color: var(--nav_color);
-    color: white;
-    transition: 0.2s;
-    font-size:20px;
-}
-.dur_button:focus {
-    filter: invert();
-}
-
-.oct_button {
-    width: 55px;
-    height: 50px;
-    border: 1px solid var(--background_color);
-    background-color: var(--nav_color);
-    color: white;
-    transition: 0.2s;
-    font-size:20px;
-}
-.oct_button:focus {
-    filter: invert();
-}
-
-.not_button {
-    width: 55px;
-    height: 50px;
-    border: 1px solid var(--background_color);
-    background-color: var(--nav_color);
-    color: white;
-    transition: 0.2s;
-    font-size:20px;
-}
-.not_button:focus {
-    filter: invert();
-}
-
-.type_button {
-    width: 55px;
-    height: 50px;
-    border: 1px solid var(--background_color);
-    background-color: var(--nav_color);
-    color: white;
-    transition: 0.2s;
-    font-size:20px;
-}
-.type_button:focus {
-    filter: invert();
-}
-
-
-.accidental_button {
-    width: 55px;
-    height: 50px;
-    border: 1px solid var(--background_color);
-    background-color: var(--nav_color);
-    color: white;
-    transition: 0.2s;
-    font-size:20px;
-}
-.accidental_button:focus {
     filter: invert();
 }

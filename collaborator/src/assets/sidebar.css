@@ -1,0 +1,66 @@
+/* Styles for the Sidebar in the Score Editor page */
+
+/* Text Styles */
+.text {
+    color: #a8a8a8;
+    font-size: 12px;
+}
+
+/* Styles for the Chord Visualizer container */
+.visualizer_container {
+    display: flex;
+    justify-content: center;
+}
+
+/* Space around container */
+.space_container {
+    display: flex;
+    justify-content: space-around;
+    padding: 0px 0px 10px 0px;
+}
+
+/* center container */
+.center_container {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0px 10px 0px;
+}
+
+/* Styles for the Chord Builder container */
+.chord_builder {
+    background-color: var(--nav_color);
+    color: white;
+    height: calc(60vh - 70px);
+    width: 20vw;
+}
+
+/* Styles for the sidebar container */
+.sidebar {
+    overflow: scroll;
+    width: 20vw;
+    height: calc(100vh - 70px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* Different Styles for smaller screens */
+@media (max-width: 1000px) {
+    .sidebar {
+        color: white;
+        overflow: scroll;
+        width: 300px;
+        height: calc(100vh - 70px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .chord_builder {
+        background-color: var(--nav_color);
+        height: calc(63vh - 70px);
+        width: 300px;
+    }
+}

@@ -1,0 +1,44 @@
+/* Styles for the Set Room Details Box in the Score Editor page */
+
+/* Container for the info */
+.join_container {
+    width: 20vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* Container for the box */
+.box_container {
+    background: rgb(255, 255, 255, 0.2);
+    border-style: solid;
+    border-color: white;
+    color: black;
+    width: 20vw;
+    height: 40vh;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Different sizes for smaller screens */
+@media (max-width: 1024px) {
+    .join_container {
+        width: 300px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .box_container {
+        background: rgb(255, 255, 255, 0.2);
+        border-style: solid;
+        border-color: white;
+        color: black;
+        width: 300px;
+        height: 37vh;
+        flex-direction: column;
+        align-items: center;
+    }
+}

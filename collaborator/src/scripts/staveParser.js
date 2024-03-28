@@ -1,8 +1,13 @@
-import { Renderer, Stave, Formatter, StaveNote } from 'vexflow';
+import { Stave, StaveNote } from 'vexflow';
 
+// Given a Stave object, simplify it to be able to be sent and stored into the database
 export function simplifyStaves(staves){
     let simplifiedStaves = []
+
+    // Loop through each stave
     for (let i = 0; i < staves.length; i++){
+
+        // Get all needed data from the stave
         let selectedStave = staves[i].stave
         let clef = selectedStave.clef
         let x = selectedStave.x
@@ -13,6 +18,7 @@ export function simplifyStaves(staves){
 
         let selectedNotes = []
 
+        // Store all data in the new smaller Stave object
         for (let j = 0; j < staves[i].notes.length; j++){
             selectedNotes.push({"keys": staves[i].notes[j].keys, "duration": staves[i].notes[j].duration, "noteType": staves[i].notes[j].noteType})
         }
@@ -22,40 +28,67 @@ export function simplifyStaves(staves){
     return simplifiedStaves
 }
 
+// Create an empty Stave object filled with quarted note rests and return it
+export function createStave(clef, timeSignature, level, firstInBar, x, y) {
+    let notes = []
+    let stave = new Stave(x, y, 400);
+
+    // If stave is the first in the line, add a clef and time signature
+    if(firstInBar){
+        stave.addClef(clef)
+        stave.addTimeSignature(timeSignature)
+    }
+
+    // Add all rest notes
+    for(let i = 0; i < 4; i++){
+        notes.push(new StaveNote({ keys: ["b/4"], duration: "qr" }))
+    }
+
+    return {"stave": stave, "notes": notes}
+}
+
+// Create a Note object and return it
 function createNoteObject(note){
+    // Get data and return note
     let keys = note.keys
     let duration = note.duration
     let noteType = note.noteType
     return new StaveNote({ keys: keys, duration: duration.concat(noteType) })
 }
 
-function createStaveObject(stave, context){
+// Create an empty Stave object and return it
+function createStaveObject(stave){
 
+    // Data
     let clef = stave.clef
     let x = stave.x
     let y = stave.y
     let width = stave.width
-    let timeSignature = stave.timeSignature
 
     let staveObj = new Stave(x, y, width);
 
+    // Add clef and time signature
     staveObj.addClef(clef)
     staveObj.addTimeSignature("4/4")
-
 
     return staveObj
 }
 
-export function rehydrateStaves(staves, context){
-    console.log("staves: ", staves)
+// Given a list of simplified staves, rehydrate them into full stave objects to be rendered
+export function rehydrateStaves(staves){
     let rehydratedStaves = []
+
+    // Loop through and convert each simple stave
     for(let i = 0; i < staves.length; i++)
     {
-        let rehydratedStave = createStaveObject(staves[i].stave, context)
+        let rehydratedStave = createStaveObject(staves[i].stave)
         let rehydratedNotes = []
+
+        // Create each note
         for(let j = 0; j < staves[i].notes.length; j++){
             rehydratedNotes.push(createNoteObject(staves[i].notes[j]))
         }
+
         rehydratedStaves.push({"stave": rehydratedStave, "notes": rehydratedNotes})
     }
     return rehydratedStaves

@@ -4,8 +4,7 @@ import ScoreEditorBar from '../components/ScoreEditorBar.vue'
 import RowDivider from '@/components/RowDivider.vue';
 import Sidebar from "../components/Sidebar.vue";
 import { socket, state } from "@/socket";
-import { rehydrateStaves, simplifyStaves } from "@/scripts/staveParser.js";
-import { createStave } from "@/scripts/scoreEditor.js";
+import { rehydrateStaves, simplifyStaves, createStave } from "@/scripts/staveParser.js";
 import ColumnDivider from "../components/ColumnDivider.vue";
 import { store } from '../store.js'
 import axios from "axios";
@@ -563,80 +562,80 @@ export default {
       </template>
 
       <template #note_type>
-        <button class="type_button" @click="this.currType = 'n'">
-          <img class="duration_button" src="../assets/4th.png" alt="Normal" />
+        <button class="option_button" @click="this.currType = 'n'">
+          <img class="image_button" src="../assets/4th.png" alt="Normal" />
         </button>
-        <button class="type_button" @click="this.currType = 'r'">
-          <img class="duration_button" src="../assets/rest.png" alt="Rest" />
+        <button class="option_button" @click="this.currType = 'r'">
+          <img class="image_button" src="../assets/rest.png" alt="Rest" />
         </button>
       </template>
 
       <template #durations>
-        <button class="dur_button" @click="this.currDuration = '16'">
-          <img class="duration_button" src="../assets/16th.png" alt="Sixteenth"/>
+        <button class="option_button" @click="this.currDuration = '16'">
+          <img class="image_button" src="../assets/16th.png" alt="Sixteenth"/>
         </button>
-        <button class="dur_button" @click="this.currDuration = '8'">
-          <img class="duration_button" src="../assets/8th.png" alt="Eighth" />
+        <button class="option_button" @click="this.currDuration = '8'">
+          <img class="image_button" src="../assets/8th.png" alt="Eighth" />
         </button>
-        <button class="dur_button" @click="this.currDuration = '4'">
-          <img class="duration_button" src="../assets/4th.png" alt="Quarter" />
+        <button class="option_button" @click="this.currDuration = '4'">
+          <img class="image_button" src="../assets/4th.png" alt="Quarter" />
         </button>
-        <button class="dur_button" @click="this.currDuration = '2'">
-          <img class="duration_button" src="../assets/half.png" alt="Half" />
+        <button class="option_button" @click="this.currDuration = '2'">
+          <img class="image_button" src="../assets/half.png" alt="Half" />
         </button>
-        <button class="dur_button" @click="this.currDuration = '1'">
-          <img class="duration_button" src="../assets/full.png" alt="Full"  />
+        <button class="option_button" @click="this.currDuration = '1'">
+          <img class="image_button" src="../assets/full.png" alt="Full"  />
         </button>
       </template>
 
       <template #octave>
-        <button class="oct_button" @click="this.currOctave = '3'">
+        <button class="option_button" @click="this.currOctave = '3'">
           3
         </button>
-        <button class="oct_button" @click="this.currOctave = '4'">
+        <button class="option_button" @click="this.currOctave = '4'">
           4
         </button>
-        <button class="oct_button" @click="this.currOctave = '5'">
+        <button class="option_button" @click="this.currOctave = '5'">
           5
         </button>
-        <button class="oct_button" @click="this.currOctave = '6'">
+        <button class="option_button" @click="this.currOctave = '6'">
           6
         </button>
       </template>
 
       <template #note>
-        <button class="not_button" @click="this.currNote = 'c'">
+        <button class="option_button" @click="this.currNote = 'c'">
           C
         </button>
-        <button class="not_button" @click="this.currNote = 'd'">
+        <button class="option_button" @click="this.currNote = 'd'">
           D
         </button>
-        <button class="not_button" @click="this.currNote = 'e'">
+        <button class="option_button" @click="this.currNote = 'e'">
           E
         </button>
-        <button class="not_button" @click="this.currNote = 'f'">
+        <button class="option_button" @click="this.currNote = 'f'">
           F
         </button>
-        <button class="not_button" @click="this.currNote = 'g'">
+        <button class="option_button" @click="this.currNote = 'g'">
           G
         </button>
-        <button class="not_button" @click="this.currNote = 'a'">
+        <button class="option_button" @click="this.currNote = 'a'">
           A
         </button>
-        <button class="not_button" @click="this.currNote = 'b'">
+        <button class="option_button" @click="this.currNote = 'b'">
           B
         </button>
       </template>
 
       <template #accidental>
-        <button class="accidental_button" @click="this.accidental = ''">
-          <img class="duration_button" src="../assets/flat.png" alt="Natural" />
+        <button class="option_button" @click="this.accidental = ''">
+          <img class="image_button" src="../assets/flat.png" alt="Natural" />
         </button>
-        <button class="accidental_button" @click="this.accidental = '#'">
-          <img class="duration_button" src="../assets/sharp.png" alt="Sharp" />
+        <button class="option_button" @click="this.accidental = '#'">
+          <img class="image_button" src="../assets/sharp.png" alt="Sharp" />
         </button>
-        <button class="accidental_button" @click="this.accidental = 'b'">
-          <img class="duration_button" src="../assets/flat.png" alt="Flat" />
+        <button class="option_button" @click="this.accidental = 'b'">
+          <img class="image_button" src="../assets/flat.png" alt="Flat" />
         </button>
       </template>
 
@@ -651,71 +650,71 @@ export default {
       <Sidebar>
 
         <template #chordNote>
-          <button class="letter_button" @click="this.chordNote = 'c'">
+          <button class="option_button" @click="this.chordNote = 'c'">
             C
           </button>
-          <button class="letter_button" @click="this.chordNote = 'd'">
+          <button class="option_button" @click="this.chordNote = 'd'">
             D
           </button>
-          <button class="letter_button" @click="this.chordNote = 'e'">
+          <button class="option_button" @click="this.chordNote = 'e'">
             E
           </button>
-          <button class="letter_button" @click="this.chordNote = 'f'">
+          <button class="option_button" @click="this.chordNote = 'f'">
             F
           </button>
-          <button class="letter_button" @click="this.chordNote = 'g'">
+          <button class="option_button" @click="this.chordNote = 'g'">
             G
           </button>
-          <button class="letter_button" @click="this.chordNote = 'a'">
+          <button class="option_button" @click="this.chordNote = 'a'">
             A
           </button>
-          <button class="letter_button" @click="this.chordNote = 'b'">
+          <button class="option_button" @click="this.chordNote = 'b'">
             B
           </button>
         </template>
         <template #chordDuration>
-          <button class="letter_button" @click="changeChordDuration('16')">
-            <img class="duration_button" src="../assets/16th.png" alt="Sixteenth"/>
+          <button class="option_button" @click="changeChordDuration('16')">
+            <img class="image_button" src="../assets/16th.png" alt="Sixteenth"/>
           </button>
-          <button class="letter_button" @click="changeChordDuration('8')">
-            <img class="duration_button" src="../assets/8th.png" alt="Eighth" />
+          <button class="option_button" @click="changeChordDuration('8')">
+            <img class="image_button" src="../assets/8th.png" alt="Eighth" />
           </button>
-          <button class="letter_button" @click="changeChordDuration('4')">
-            <img class="duration_button" src="../assets/4th.png" alt="Quarter" />
+          <button class="option_button" @click="changeChordDuration('4')">
+            <img class="image_button" src="../assets/4th.png" alt="Quarter" />
           </button>
-          <button class="letter_button" @click="changeChordDuration('2')">
-            <img class="duration_button" src="../assets/half.png" alt="Half" />
+          <button class="option_button" @click="changeChordDuration('2')">
+            <img class="image_button" src="../assets/half.png" alt="Half" />
           </button>
-          <button class="letter_button" @click="changeChordDuration('1')">
-            <img class="duration_button" src="../assets/full.png" alt="Full"  />
+          <button class="option_button" @click="changeChordDuration('1')">
+            <img class="image_button" src="../assets/full.png" alt="Full"  />
           </button>
         </template>
 
 
 
         <template #chordOctave>
-          <button class="letter_button" @click="this.chordOctave = '3'">
+          <button class="option_button" @click="this.chordOctave = '3'">
             3
           </button>
-          <button class="letter_button" @click="this.chordOctave = '4'">
+          <button class="option_button" @click="this.chordOctave = '4'">
             4
           </button>
-          <button class="letter_button" @click="this.chordOctave = '5'">
+          <button class="option_button" @click="this.chordOctave = '5'">
             5
           </button>
-          <button class="letter_button" @click="this.chordOctave = '6'">
+          <button class="option_button" @click="this.chordOctave = '6'">
             6
           </button>
         </template>
         <template #chordAccidental>
-          <button class="accidental_button" @click="this.chordAccidental = ''">
-            <img class="duration_button" src="../assets/flat.png" alt="Natural" />
+          <button class="option_button" @click="this.chordAccidental = ''">
+            <img class="image_button" src="../assets/flat.png" alt="Natural" />
           </button>
-          <button class="letter_button" @click="this.chordAccidental = '#'">
-            <img class="duration_button" src="../assets/sharp.png" alt="Sharp" />
+          <button class="option_button" @click="this.chordAccidental = '#'">
+            <img class="image_button" src="../assets/sharp.png" alt="Sharp" />
           </button>
-          <button class="letter_button" @click="this.chordAccidental = 'b'">
-            <img class="duration_button" src="../assets/flat.png" alt="Flat" />
+          <button class="option_button" @click="this.chordAccidental = 'b'">
+            <img class="image_button" src="../assets/flat.png" alt="Flat" />
           </button>
         </template>
         <template #addButton>

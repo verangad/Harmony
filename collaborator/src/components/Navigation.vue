@@ -1,13 +1,8 @@
+<!-- Navigation: Used for the Nav Bar in the Home page -->
 <script>
-export default {
-  name: "Navigation",
-  methods: {
-    openDropdown (){
-      document.getElementById("menu_dropdown").classList.toggle("show");
-    }
+  export default {
+    name: "Navigation"
   }
-}
-
 </script>
 
 <template>
@@ -24,62 +19,6 @@ export default {
   </nav>
 </template>
 
-
-
 <style scoped>
-
-nav {
-  overflow: hidden;
-  font-family: Arial, Helvetica, sans-serif;
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  width: 100%;
-  height: 70px;
-  align-items: center;
-}
-
-nav a {
-  float: left;
-  font-size: 16px;
-
-  text-align: center;
-  text-decoration: none;
-}
-
-
-
-@media (min-width: 1024px) {
-
-  nav {
-    text-align: left;
-    font-size: 1rem;
-
-  }
-}
-
-.nav_item {
-  width: 50%;
-
-  outline: none;
-  color: black;
-  padding: 10px 10px;
-  background-color: inherit;
-  font-family: inherit;
-  margin: 0;
-}
-
-.button_container {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  width: 50%;
-}
-
-/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
-.show {
-  display:block;
-}
-
-
+  @import '../assets/homeNavigation.css';
 </style>

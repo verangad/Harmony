@@ -1,5 +1,4 @@
 <script>
-  import SpacerContainer from "../components/SpacerContainer.vue"
   import Navigation from '../components/Navigation.vue'
   import ScoreList from '../components/ScoreList.vue'
   import LoginRoom from '../components/LoginRoom.vue'
@@ -10,9 +9,8 @@
   import axios from "axios";
   import { store } from '../store.js'
 
-
   export default {
-    components: {SpacerContainer,
+    components: {
     Navigation,
     ScoreList,
     LoginRoom,
@@ -62,7 +60,7 @@
       editScore(chosenScore){
         store.score = chosenScore
         this.$router.push({
-          name: 'scoreeditor'})
+          name: 'scoreEditor'})
       }
     },
     mounted() {
