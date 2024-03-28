@@ -1,17 +1,15 @@
 <script>
-import { Renderer, Stave, Formatter, StaveNote, StaveTie, Accidental } from 'vexflow';
+import { Renderer, Stave, Formatter, StaveNote, Accidental } from 'vexflow';
 import ScoreEditorBar from '../components/ScoreEditorBar.vue'
 import RowDivider from '@/components/RowDivider.vue';
 import Sidebar from "../components/Sidebar.vue";
-import { socket, state } from "@/socket";
+import { socket } from "@/socket";
 import { rehydrateStaves, simplifyStaves, createStave } from "@/scripts/staveParser.js";
 import ColumnDivider from "../components/ColumnDivider.vue";
 import { store } from '../store.js'
 import axios from "axios";
 import SideScroller from '@/components/SideScroller.vue';
 import html2canvas from "html2canvas";
-
-
 
 export default {
   name: "ScoreEditor",
@@ -629,7 +627,7 @@ export default {
 
       <template #accidental>
         <button class="option_button" @click="this.accidental = ''">
-          <img class="image_button" src="../assets/flat.png" alt="Natural" />
+          <img class="image_button" src="../assets/natural.png" alt="Natural" />
         </button>
         <button class="option_button" @click="this.accidental = '#'">
           <img class="image_button" src="../assets/sharp.png" alt="Sharp" />
@@ -708,7 +706,7 @@ export default {
         </template>
         <template #chordAccidental>
           <button class="option_button" @click="this.chordAccidental = ''">
-            <img class="image_button" src="../assets/flat.png" alt="Natural" />
+            <img class="image_button" src="../assets/natural.png" alt="Natural" />
           </button>
           <button class="option_button" @click="this.chordAccidental = '#'">
             <img class="image_button" src="../assets/sharp.png" alt="Sharp" />
