@@ -9,6 +9,7 @@
   import RowDivider from "@/components/RowDivider.vue"
   import ColumnDivider from "@/components/ColumnDivider.vue"
   import ScoreListItem from "@/components/ScoreListItem.vue"
+  import HorizontalLine from "@/components/HorizontalLine.vue"
   import axios from "axios";
   import { store } from '../store.js'
 
@@ -21,7 +22,8 @@
     LoginRoom,
     RowDivider,
     ColumnDivider,
-    ScoreListItem},
+    ScoreListItem,
+      HorizontalLine},
     data() {
       return { 
         canvas: null,
@@ -86,6 +88,7 @@
         <button class="createScore" @click="createScore">Create Score</button>
       </template>
     </Navigation>
+    <HorizontalLine />
     <ColumnDivider>
       <ScoreList>
         <ul v-for="score in scores" :key="score.id">

@@ -142,6 +142,11 @@ serve.get('/assets/axios.js', (req, res) => {
     res.sendFile(join(__dirname, './collaborator/dist/assets/axios.js'));
 });
 
+serve.get('/assets/HorizontalLine.js', (req, res) => {
+    res.setHeader('Content-Type', 'text/javascript')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/HorizontalLine.js'));
+});
+
 
 
 serve.get('/assets/full.png', (req, res) => {

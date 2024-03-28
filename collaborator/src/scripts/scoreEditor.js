@@ -4,7 +4,7 @@ export function createStave(clef, timeSignature, level, firstInBar, x, y) {
     let notes = []
     let stave = new Stave(x, y, 400);
 
-    if(firstInBar || x === 0){
+    if(firstInBar){
         stave.addClef(clef)
         stave.addTimeSignature(timeSignature)
     }

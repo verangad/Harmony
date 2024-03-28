@@ -16,46 +16,65 @@ name: "Sidebar",
    <RowDivider>
     
      <div class="chord_builder">
-      <RowDivider>
+
         <h1>Chord Builder</h1>
         <div class="space_container">
-          <SideScroller>
-            <slot name="chordNote">
+          <RowDivider>
+            <SideScroller>
+              <slot name="chordOctave">
 
-            </slot>
-          </SideScroller>
-          <SideScroller>
-            <slot name="chordOctave">
+              </slot>
+            </SideScroller>
+            <div class="text">
+              Octave
+            </div>
+          </RowDivider>
 
-            </slot>
-          </SideScroller>
+          <RowDivider>
+            <SideScroller>
+              <slot name="chordNote">
+
+              </slot>
+            </SideScroller>
+            <div class="text">
+              Note
+            </div>
+          </RowDivider>
         </div>
 
         <div>
-          <slot name="chordAccidental">
+          <RowDivider>
+            <div>
+              <slot name="chordAccidental">
 
-          </slot>
+              </slot>
+            </div>
+            <div class="text">
+              Natural/Sharp/Flat
+            </div>
+          </RowDivider>
         </div>
         <div class="center_container">
-          <SideScroller>
-            <slot name="chordDuration">
+          <RowDivider>
+            <SideScroller>
+              <slot name="chordDuration">
 
-            </slot>
-          </SideScroller>
-        </div>
-
-
-        <div>
-          <slot name="addButton">
-
-          </slot>
+              </slot>
+            </SideScroller>
+            <div class="text">
+              Duration
+            </div>
+           </RowDivider>
         </div>
         <div class="visualizer_container">
           <slot name="visualizer">
 
           </slot>
         </div>
-        <div class="login_buttons">
+        <div class="chord_buttons">
+          <slot name="addButton">
+
+          </slot>
           <slot name="submitChord">
 
           </slot>
@@ -65,7 +84,6 @@ name: "Sidebar",
           
         </div>
 
-    </RowDivider>
      </div>
      <SetRoomBox/>
    </RowDivider>
@@ -73,7 +91,13 @@ name: "Sidebar",
 </template>
 
 <style scoped>
+@import '../assets/base.css';
 @import '../assets/scrollbar.css';
+
+.text{
+  color: #a8a8a8;
+  font-size: 12px;
+}
 .visualizer_container {
   display: flex;
   justify-content: center;
@@ -89,8 +113,9 @@ name: "Sidebar",
   padding: 10px 0px 10px 0px;
 }
 .chord_builder {
-  background-color: white;
-  height: calc(63vh - 70px);
+  background-color: var(--nav_color);
+  color: white;
+  height: calc(60vh - 70px);
   width: 20vw;
 }
 .sidebar{
@@ -106,6 +131,7 @@ name: "Sidebar",
 
 @media (max-width: 1024px) {
   .sidebar{
+    color: white;
     overflow: scroll;
     width: 300px;
     height: calc(100vh - 70px);
@@ -116,7 +142,7 @@ name: "Sidebar",
     text-align: center;
   }
   .chord_builder {
-    background-color: white;
+    background-color: var(--nav_color);
     height: calc(63vh - 70px);
     width: 300px;
   }

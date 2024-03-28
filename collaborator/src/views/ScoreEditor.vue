@@ -1,5 +1,5 @@
 <script>
-import { Renderer, Stave, Formatter, StaveNote } from 'vexflow';
+import { Renderer, Stave, Formatter, StaveNote, StaveTie, Accidental } from 'vexflow';
 import ScoreEditorBar from '../components/ScoreEditorBar.vue'
 import RowDivider from '@/components/RowDivider.vue';
 import Sidebar from "../components/Sidebar.vue";
@@ -45,7 +45,11 @@ export default {
       visualizerRenderer: null,
       visualizerContext: null,
       visualizerNotes: ["c/4", "e/4", "g/4"],
-      visualizerGroup: null
+      visualizerGroup: null,
+      accidental: "",
+      chordAccidental: "",
+      ties: []
+
       }
   },
   created() {
@@ -125,6 +129,9 @@ export default {
         }
 
       }
+      this.ties.forEach((t) => {
+        t.setContext(this.context).draw();
+      });
       this.context.closeGroup();
     },
     resize()
@@ -134,58 +141,61 @@ export default {
       this.drawVisualizer()
     },
     moveLeft() {
+      if(this.staves.length > 0){
+        // Dont move left when we are at the first stave and first note
+        if(this.position.stave !== 0 || this.position.note !== 0) {
 
-      // Dont move left when we are at the first stave and first note
-      if(this.position.stave !== 0 || this.position.note !== 0) {
+          // Clear previous score
+          this.context.svg.removeChild(this.group)
 
-        // Clear previous score
-        this.context.svg.removeChild(this.group)
+          // Unselect Note
+          this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "black", strokeStyle: "black"})
 
-        // Unselect Note
-        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "black", strokeStyle: "black"})
+          // Moving to previous stave if we are at the leftmost of the current stave
+          if(this.position.note === 0) {
+            this.position.stave--
+            this.position.note = this.staves[this.position.stave].notes.length - 1
+          }
+          else {
+            // Move left
+            this.position.note--
+          }
 
-        // Moving to previous stave if we are at the leftmost of the current stave
-        if(this.position.note === 0) {
-          this.position.stave--
-          this.position.note = this.staves[this.position.stave].notes.length - 1
+          // Colour selected note blue
+          this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+
+          this.drawScore()
         }
-        else {
-          // Move left
-          this.position.note--
-        }
-
-        // Colour selected note blue
-        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
-
-        this.drawScore()
       }
     },
     moveRight() {
-      let rightmostNotePos = this.staves[this.position.stave].notes.length - 1
+      if(this.staves.length > 0){
+        let rightmostNotePos = this.staves[this.position.stave].notes.length - 1
 
-      // Dont move right when we are at the last stave and last note
-      if(this.position.stave !== this.staves.length - 1 || this.position.note !== rightmostNotePos) {
+        // Dont move right when we are at the last stave and last note
+        if(this.position.stave !== this.staves.length - 1 || this.position.note !== rightmostNotePos) {
 
-        // Clear previous score
-        this.context.svg.removeChild(this.group)
+          // Clear previous score
+          this.context.svg.removeChild(this.group)
 
-        // Unselect Note
-        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "black", strokeStyle: "black"})
+          // Unselect Note
+          this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "black", strokeStyle: "black"})
 
-        // Moving to next stave if we are at the rightmost of the current stave
-        if(this.position.note === rightmostNotePos) {
-          this.position.stave++
-          this.position.note = 0
+          // Moving to next stave if we are at the rightmost of the current stave
+          if(this.position.note === rightmostNotePos) {
+            this.position.stave++
+            this.position.note = 0
+          }
+          else {
+            // Move right
+            this.position.note++
+          }
+
+          // Colour selected note blue
+          this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+
+          this.drawScore()
         }
-        else {
-          // Move right
-          this.position.note++
-        }
-
-        // Colour selected note blue
-        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
-
-        this.drawScore()
       }
     },
     editNote(chord) {
@@ -195,7 +205,7 @@ export default {
       let editingNote = this.position.note
 
 
-      let key = this.currNote.concat("/", this.currOctave)
+      let key = this.currNote.concat(this.accidental, "/", this.currOctave)
       let keyArr = []
       let dur = this.currDuration
       if(chord){
@@ -205,6 +215,18 @@ export default {
       else{
         keyArr = [key]
       }
+
+      let accidentalNotes = []
+      for(let i = 0; i < keyArr.length; i++){
+
+        if(keyArr[i].charAt(1) !== "#" && keyArr[i].charAt(1) !== "b"){
+          accidentalNotes.push("")
+        }
+        else{
+          accidentalNotes.push(keyArr[i].charAt(1))
+        }
+      }
+
 
       let selectedNoteDuration = this.staves[editingStave].notes[editingNote].duration
       if(selectedNoteDuration === "q") {
@@ -220,7 +242,9 @@ export default {
 
       // If note is same duration -> simply replace it
       if(selectedNoteDuration === newNoteDuration) {
+
         this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: keyArr, duration: dur })
+
       }
       // If new note is smaller than the selected, split it up
       else if (selectedNoteDuration > newNoteDuration) {
@@ -231,134 +255,243 @@ export default {
 
         let insertRest = dur
 
-        if(this.currType === "n"){
-          insertRest = dur.concat("r")
-        }
 
-        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: [key], duration: dur })
+
+        this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: keyArr, duration: dur })
 
         // Insert same of first note as rests until there is no room
         for(remainder; remainder > 0; remainder -= newNoteDuration){
-          this.staves[editingStave].notes.splice(index, 0, new StaveNote({ keys: [key], duration: insertRest }))
+          this.staves[editingStave].notes.splice(index, 0, new StaveNote({ keys: keyArr, duration: insertRest }))
           index++
         }
 
       }
       // If new note is bigger than the selected, replace the notes that take up the space
       else if (selectedNoteDuration < newNoteDuration) {
-        // Insert first note
-        let remainder = newNoteDuration
-        let br = editingNote >= this.staves[editingStave].notes.length - 1
-        let total = 0
+        // Check if fit in stave
+        let remainder = newNoteDuration;
+        let newNoteDurationString = (1.0 / newNoteDuration).toString()
+        let currNote = editingNote;
+        let numNotes = this.staves[editingStave].notes.length - 1
+        let numNotesToCut = 0;
+        let breaker = 0
+        let newRemainder = 0;
+        let oldKeys = [];
 
-        while(remainder > 0 && !br){
-          let minus = this.staves[editingStave].notes[editingNote].duration
+        while(currNote <= numNotes && remainder > 0 && !breaker) {
 
-          if(minus === "q"){
-            minus = 1.0/4.0
+          let checkNoteDuration = this.staves[editingStave].notes[currNote].duration
+
+          if (checkNoteDuration === "q") {
+            checkNoteDuration = 1.0 / 4.0
+          } else {
+            checkNoteDuration = 1.0 / Number(checkNoteDuration)
           }
-          else {
-            minus =  1.0/Number(minus)
+
+          if (checkNoteDuration <= remainder && currNote <= numNotes) {
+            numNotesToCut++;
+            currNote++
+            remainder -= checkNoteDuration
           }
-          br = editingNote >= this.staves[editingStave].notes.length - 1
+          else if(checkNoteDuration > remainder && currNote <= numNotes) {
+            // duration of second note
+            newRemainder = checkNoteDuration - remainder;
 
-
-          remainder -= minus
-          total += minus
-
-          this.staves[editingStave].notes.splice(editingNote, 1)
+            oldKeys = this.staves[editingStave].notes[currNote].keys
+            breaker = 1
+          }
         }
 
+        // Fits in
+        if(remainder === 0) {
+          this.staves[editingStave].notes[editingNote] = new StaveNote({keys: keyArr, duration: newNoteDurationString})
+          for(let i = 0; i < numNotesToCut - 1; i++){
+            this.staves[editingStave].notes.splice(editingNote + 1, 1)
+          }
+        }
+        else if(remainder > 0 && currNote <= numNotes) {
+          this.staves[editingStave].notes[editingNote] = new StaveNote({keys: keyArr, duration: newNoteDurationString})
+          for(let i = 0; i < numNotesToCut - 1; i++){
+            this.staves[editingStave].notes.splice(editingNote + 1, 1)
+          }
+          let remainderString = (1.0/remainder).toString()
+          let newRemainderString = (1.0/newRemainder).toString()
+          this.staves[editingStave].notes.splice(editingNote + 1, 1)
+          this.staves[editingStave].notes.splice(editingNote + 1, 0, new StaveNote({keys: oldKeys, duration: newRemainderString}))
 
 
-        if(editingNote >= this.staves[editingStave].notes.length - 1 && remainder > 0){
-          // If last stave, create new and insert remainder
+        }
+        /*
+        // Overflow, create new stave or move to next one
+        */
+        else if (remainder > 0 && currNote > numNotes) {
+          //last stave, create new one
           if(this.staves.length <= editingStave + 1){
-            if(this.stavePos.x + 400 > this.div.offsetWidth) {
-              this.stavePos.x = 0
-              this.stavePos.y += 100
-            }
-
             this.staves.push(createStave("treble", "4/4", 0, false, this.stavePos.x, this.stavePos.y))
-            this.stavePos.x += 400
           }
-          // If not last stave
-          else {
-            console.log("SD")
+
+          // fill up to end of stave
+          for(let i = 0; i < numNotesToCut; i++){
+            let currDur = this.staves[editingStave].notes[editingNote].duration
+            this.staves[editingStave].notes[editingNote + i] = new StaveNote({keys: keyArr, duration: currDur})
+
+            if(i > 0){
+              this.ties.push(new StaveTie({
+                first_note:  this.staves[editingStave].notes[editingNote + i - 1],
+                last_note:  this.staves[editingStave].notes[editingNote + i],
+                first_indices: [0],
+                last_indices: [0],
+              }))
+            }
+          }
+          let currDur = 0
+          if (this.staves[editingStave + 1].notes[0].duration === "q") {
+            currDur = 1.0 / 4.0
+          } else {
+            currDur = 1.0 / Number(this.staves[editingStave + 1].notes[0].duration)
+          }
+
+          let counter = 0
+          let newBreaker = false
+          let newOldKeys = []
+          let secondRemainder = 0
+          while(remainder > 0 && !newBreaker) {
+            console.log(remainder)
+            // Fill new stave
+            // Equal
+            if(remainder >= currDur){
+              this.staves[editingStave + 1].notes[counter] = new StaveNote({keys: keyArr, duration: this.staves[editingStave + 1].notes[0].duration})
+              this.ties.push(new StaveTie({
+                first_note:  this.staves[editingStave].notes[this.staves[editingStave].notes.length - 1],
+                last_note:  this.staves[editingStave + 1].notes[counter],
+                first_indices: [0],
+                last_indices: [0],
+              }))
+              remainder -= currDur
+              counter++
+            }
+            // split
+            else if (remainder < currDur){
+              // duration of second note
+              secondRemainder = currDur - remainder;
+
+              newOldKeys = this.staves[editingStave + 1].notes[counter].keys
+              newBreaker = 1
+            }
+          }
+          let newNoteDurationString = (1.0 / remainder).toString()
+          if(remainder > 0) {
+            this.staves[editingStave + 1].notes[counter] = new StaveNote({keys: keyArr, duration: newNoteDurationString})
+
+            let secondRemainderString = (1.0/secondRemainder).toString()
+            this.staves[editingStave].notes.splice(counter + 1, 1)
+            this.staves[editingStave].notes.splice(counter + 1, 0, new StaveNote({keys: newOldKeys, duration: secondRemainderString}))
+
           }
         }
-        else{
-          this.staves[editingStave].notes.splice(editingNote, 0, new StaveNote({ keys: [key], duration: (1.0/total).toString() }))
+      }
+
+      if(keyArr.length > 0){
+        let acciNotes = this.staves[editingStave].notes[editingNote]
+        for(let j = 0; j < accidentalNotes.length; j++){
+          if(accidentalNotes[j] !== ""){
+            acciNotes.addModifier(new Accidental(accidentalNotes[j]), j)
+          }
+
         }
       }
 
       // Select Note
-      this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
 
-      this.drawScore()
-      this.sendSheet()
-      this.saveSheet()
-    },
-    addStave(initialStave, clef, timeSignature, level, firstInBar) {
-      if(!initialStave){
-        this.context.svg.removeChild(this.group)
-      }
+        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
 
-
-      this.staves.push(createStave(clef, timeSignature, level, firstInBar, this.stavePos.x, this.stavePos.y))
-      this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
-
-
-      this.drawScore()
-      this.sendSheet()
-      this.saveSheet()
-    },
-    deleteStave()
-    {
-      if(this.staves.length > 0) {
-        this.context.svg.removeChild(this.group)
-        this.staves.pop()
 
         this.drawScore()
         this.sendSheet()
         this.saveSheet()
-      }
+      },
+      addStave(initialStave, clef, timeSignature, level, firstInBar) {
+        if(!initialStave){
+          this.context.svg.removeChild(this.group)
+        }
 
-    },
-    updateScore(initialStave, score) {
-      this.staves = score
-      if(!initialStave) {
-        this.context.svg.removeChild(this.group)
-        this.visualizerContext.svg.removeChild(this.visualizerGroup)
-      }
-      this.drawScore()
-    },
-    drawVisualizer(initial){
-      if(!initial){
-        this.visualizerContext.svg.removeChild(this.visualizerGroup)
-      }
-      this.visualizerGroup = this.visualizerContext.openGroup();
 
-      this.visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight);
-      let visualizerStave = new Stave(0,0,200)
-      visualizerStave.addClef("treble")
-      visualizerStave.addTimeSignature("4/4")
+        this.staves.push(createStave(clef, timeSignature, level, firstInBar, this.stavePos.x, this.stavePos.y))
+        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
 
-      let chordNotes = [new StaveNote({keys: ["b/4"], duration: "1r"})]
-      if(this.visualizerNotes.length > 0){
-        chordNotes = [new StaveNote({keys: this.visualizerNotes, duration: this.chordDuration})]
-      }
+
+        this.drawScore()
+        this.sendSheet()
+        this.saveSheet()
+      },
+      deleteStave()
+      {
+        if(this.staves.length > 0) {
+          this.context.svg.removeChild(this.group)
+          this.staves.pop()
+
+          this.drawScore()
+          this.sendSheet()
+          this.saveSheet()
+        }
+
+      },
+      updateScore(initialStave, score) {
+        this.staves = score
+        if(!initialStave) {
+          this.context.svg.removeChild(this.group)
+          this.visualizerContext.svg.removeChild(this.visualizerGroup)
+        }
+        if(this.staves.length > 0){
+          if(this.staves[0].notes.length > 0){
+            this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+          }
+        }
+        this.drawScore()
+      },
+      drawVisualizer(initial){
+        if(!initial){
+          this.visualizerContext.svg.removeChild(this.visualizerGroup)
+        }
+        let accidentalNotes = []
+        for(let i = 0; i < this.visualizerNotes.length; i++){
+
+          if(this.visualizerNotes[i].charAt(1) !== "#" && this.visualizerNotes[i].charAt(1) !== "b"){
+            accidentalNotes.push("")
+          }
+          else{
+            accidentalNotes.push(this.visualizerNotes[i].charAt(1))
+          }
+        }
+        this.visualizerGroup = this.visualizerContext.openGroup();
+
+        this.visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight);
+        let visualizerStave = new Stave(0,0,200)
+        visualizerStave.addClef("treble")
+        visualizerStave.addTimeSignature("4/4")
+
+        let chordNotes = [new StaveNote({keys: ["b/4"], duration: "1r"})]
+        if(this.visualizerNotes.length > 0){
+          chordNotes = [new StaveNote({keys: this.visualizerNotes, duration: this.chordDuration})]
+
+          for(let j = 0; j < accidentalNotes.length; j++){
+            if(accidentalNotes[j] !== ""){
+              chordNotes[0].addModifier(new Accidental(accidentalNotes[j]), j)
+            }
+
+          }
+        }
 
         // Draw notes
-      console.log(visualizerStave)
+        console.log(visualizerStave)
 
-      visualizerStave.setContext(this.visualizerContext).draw()
-      Formatter.FormatAndDraw(this.visualizerContext, visualizerStave, chordNotes);
-      this.visualizerContext.closeGroup();
+        visualizerStave.setContext(this.visualizerContext).draw()
+        Formatter.FormatAndDraw(this.visualizerContext, visualizerStave, chordNotes);
+        this.visualizerContext.closeGroup();
 
       },
       addNoteToChord() {
-        let note = this.chordNote.concat("/", this.chordOctave)
+        let note = this.chordNote.concat(this.chordAccidental ,"/", this.chordOctave)
         if(!this.visualizerNotes.includes(note)){
           this.visualizerNotes.push(note)
           this.drawVisualizer(false)
@@ -379,41 +512,41 @@ export default {
       submitChord() {
         this.editNote(true)
       }
-  },
-  mounted(){
-      socket.connect();
+    },
+    mounted(){
+    socket.connect();
 
-      this.visualizer = document.getElementById("chord_visualizer")
+    this.visualizer = document.getElementById("chord_visualizer")
 
-      this.div = document.getElementById("score_canvas")
-      let renderer = new Renderer(this.div, Renderer.Backends.SVG)
-      let visualizerRenderer = new Renderer(this.visualizer, Renderer.Backends.SVG)
+    this.div = document.getElementById("score_canvas")
+    let renderer = new Renderer(this.div, Renderer.Backends.SVG)
+    let visualizerRenderer = new Renderer(this.visualizer, Renderer.Backends.SVG)
 
 
-      renderer.resize(this.div.offsetWidth, this.div.offsetHeight)
-      visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight)
-      this.renderer = renderer
-      this.visualizerRenderer = visualizerRenderer
+    renderer.resize(this.div.offsetWidth, this.div.offsetHeight)
+    visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight)
+    this.renderer = renderer
+    this.visualizerRenderer = visualizerRenderer
 
-      this.context = renderer.getContext()
-      this.visualizerContext = visualizerRenderer.getContext()
+    this.context = renderer.getContext()
+    this.visualizerContext = visualizerRenderer.getContext()
 
-      let recScore = store.score
-      this.id = recScore.id
+    let recScore = store.score
+    this.id = recScore.id
 
-      // Join room
-      socket.emit('joinRoom', this.id);
+    // Join room
+    socket.emit('joinRoom', this.id);
 
-      let dehydratedStaves = JSON.parse(recScore.score)
-      this.updateScore(true, rehydrateStaves(dehydratedStaves, this.context))
-      this.drawVisualizer(true)
+    let dehydratedStaves = JSON.parse(recScore.score)
+    this.updateScore(true, rehydrateStaves(dehydratedStaves, this.context))
+    this.drawVisualizer(true)
 
 
     socket.on('scoreChangeBroadcast', (msg) => {
-        let rehydratedStaves = rehydrateStaves(msg, this.context)
-        this.updateScore(false, rehydratedStaves)
-      })
-    }
+    let rehydratedStaves = rehydrateStaves(msg, this.context)
+    this.updateScore(false, rehydratedStaves)
+    })
+  }
 }
 
 </script>
@@ -435,7 +568,7 @@ export default {
         </button>
       </template>
       <template #add_stave>
-        <button class="stave_button" @click="addStave">
+        <button class="stave_button" @click="addStave(false, '', '', 0, false)">
           +
         </button>
         <button class="stave_button" @click="deleteStave">
@@ -444,76 +577,79 @@ export default {
       </template>
 
       <template #note_type>
-        <button class="letter_button" @click="this.currDuration = 'n'">
+        <button class="type_button" @click="this.currType = 'n'">
           <img class="duration_button" src="../assets/4th.png" alt="Normal" />
         </button>
-        <button class="letter_button" @click="this.currDuration = 'r'">
+        <button class="type_button" @click="this.currType = 'r'">
           <img class="duration_button" src="../assets/rest.png" alt="Rest" />
         </button>
       </template>
 
       <template #durations>
-        <button class="letter_button" @click="this.currDuration = '16'">
+        <button class="dur_button" @click="this.currDuration = '16'">
           <img class="duration_button" src="../assets/16th.png" alt="Sixteenth"/>
         </button>
-        <button class="letter_button" @click="this.currDuration = '8'">
+        <button class="dur_button" @click="this.currDuration = '8'">
           <img class="duration_button" src="../assets/8th.png" alt="Eighth" />
         </button>
-        <button class="letter_button" @click="this.currDuration = '4'">
+        <button class="dur_button" @click="this.currDuration = '4'">
           <img class="duration_button" src="../assets/4th.png" alt="Quarter" />
         </button>
-        <button class="letter_button" @click="this.currDuration = '2'">
+        <button class="dur_button" @click="this.currDuration = '2'">
           <img class="duration_button" src="../assets/half.png" alt="Half" />
         </button>
-        <button class="letter_button" @click="this.currDuration = '1'">
+        <button class="dur_button" @click="this.currDuration = '1'">
           <img class="duration_button" src="../assets/full.png" alt="Full"  />
         </button>
       </template>
 
       <template #octave>
-        <button class="letter_button" @click="this.currOctave = '3'">
+        <button class="oct_button" @click="this.currOctave = '3'">
           3
         </button>
-        <button class="letter_button" @click="this.currOctave = '4'">
+        <button class="oct_button" @click="this.currOctave = '4'">
           4
         </button>
-        <button class="letter_button" @click="this.currOctave = '5'">
+        <button class="oct_button" @click="this.currOctave = '5'">
           5
         </button>
-        <button class="letter_button" @click="this.currOctave = '6'">
+        <button class="oct_button" @click="this.currOctave = '6'">
           6
         </button>
       </template>
 
       <template #note>
-        <button class="letter_button" @click="this.currNote = 'c'">
+        <button class="not_button" @click="this.currNote = 'c'">
           C
         </button>
-        <button class="letter_button" @click="this.currNote = 'd'">
+        <button class="not_button" @click="this.currNote = 'd'">
           D
         </button>
-        <button class="letter_button" @click="this.currNote = 'e'">
+        <button class="not_button" @click="this.currNote = 'e'">
           E
         </button>
-        <button class="letter_button" @click="this.currNote = 'f'">
+        <button class="not_button" @click="this.currNote = 'f'">
           F
         </button>
-        <button class="letter_button" @click="this.currNote = 'g'">
+        <button class="not_button" @click="this.currNote = 'g'">
           G
         </button>
-        <button class="letter_button" @click="this.currNote = 'a'">
+        <button class="not_button" @click="this.currNote = 'a'">
           A
         </button>
-        <button class="letter_button" @click="this.currNote = 'b'">
+        <button class="not_button" @click="this.currNote = 'b'">
           B
         </button>
       </template>
 
       <template #accidental>
-        <button class="letter_button" @click="">
+        <button class="accidental_button" @click="this.accidental = ''">
+          <img class="duration_button" src="../assets/Flat.png" alt="Natural" />
+        </button>
+        <button class="accidental_button" @click="this.accidental = '#'">
           <img class="duration_button" src="../assets/Sharp.png" alt="Sharp" />
         </button>
-        <button class="letter_button" @click="">
+        <button class="accidental_button" @click="this.accidental = 'b'">
           <img class="duration_button" src="../assets/Flat.png" alt="Flat" />
         </button>
       </template>
@@ -586,10 +722,13 @@ export default {
           </button>
         </template>
         <template #chordAccidental>
-          <button class="letter_button" @click="">
+          <button class="accidental_button" @click="this.chordAccidental = ''">
+            <img class="duration_button" src="../assets/Flat.png" alt="Natural" />
+          </button>
+          <button class="letter_button" @click="this.chordAccidental = '#'">
             <img class="duration_button" src="../assets/Sharp.png" alt="Sharp" />
           </button>
-          <button class="letter_button" @click="">
+          <button class="letter_button" @click="this.chordAccidental = 'b'">
             <img class="duration_button" src="../assets/Flat.png" alt="Flat" />
           </button>
         </template>
@@ -627,29 +766,8 @@ export default {
 <style scoped>
 @import '../assets/base.css';
 @import '../assets/scrollbar.css';
+@import '../assets/buttons.css';
 
-.letter_button {
-  width: 55px;
-  height: 50px;
-  border: 1px solid var(--background_color);
-  background-color: var(--nav_color);
-  color: white;
-  transition: 0.2s;
-  font-size:20px;
-}
-.edit_button {
-  width: 105px;
-}
-.letter_button:hover {
-  background-color: var(--nav_color_hover);
-}
-
-.duration_button {
-  margin-top: 2px;
-  width: 40px;
-  height: 40px;
-  filter: invert();
-}
 
 .score_container {
   background-color: white;
@@ -664,6 +782,8 @@ export default {
 }
 
 .visualizer {
+  background-color: white;
+  border: 2px solid black;
   width: 210px;
   height: 115px;
 }

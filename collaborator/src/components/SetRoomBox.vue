@@ -101,7 +101,7 @@ export default {
   border-color: white;
   color: black;
   width: 20vw;
-  height: 37vh;
+  height: 40vh;
   flex-direction: column;
   align-items: center;
 }

@@ -18,7 +18,7 @@ export default {
     </div>
     <div class="button_container">
       <div class="nav_item">
-        <h1>Test</h1>
+        <h1>Harmony</h1>
       </div>
     </div>
   </nav>
@@ -60,7 +60,7 @@ nav a {
 
 .nav_item {
   width: 50%;
-  font-size: 16px;
+
   outline: none;
   color: black;
   padding: 10px 10px;

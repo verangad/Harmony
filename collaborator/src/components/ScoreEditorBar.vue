@@ -1,9 +1,13 @@
 <script>
 import ColumnDivider from "./ColumnDivider.vue";
 import SideScroller from "./SideScroller.vue";
+import RowDivider from "./RowDivider.vue";
+
 export default {
   name: "ScoreEditorBar",
   components: {
+    ColumnDivider,
+    RowDivider,
     SideScroller,
   }
 }
@@ -17,55 +21,97 @@ export default {
         <slot name="back_button">
         </slot>
         <div class="move_buttons">
-          <slot name="left">
-          </slot>
+          <RowDivider>
+            <div class="accidental_container">
+              <slot name="left">
+              </slot>
 
-          <slot name="right">
-          </slot>
+              <slot name="right">
+              </slot>
+            </div>
+            <div class="text">
+              Move Left/Right
+            </div>
+          </RowDivider>
         </div>
         <div class="stave_buttons">
-          <slot name="add_stave">
-          </slot>
-          <slot name="delete_stave">
-          </slot>
+          <RowDivider>
+            <div class="accidental_container">
+              <slot name="add_stave">
+              </slot>
+              <slot name="delete_stave">
+              </slot>
+            </div>
+            <div class="text">
+              Add/Remove Stave
+            </div>
+          </RowDivider>
         </div>
       </div>
     </div>
 
     <div class="nav_item">
-      <slot name="note_type">
-      </slot>
+      <RowDivider>
+        <div class="accidental_container">
+          <slot name="note_type">
+          </slot>
+        </div>
+        <div class="text">
+          Normal/Rest
+        </div>
+      </RowDivider>
     </div>
 
     <div class="nav_item">
-      <SideScroller>
-        <slot name="durations">
+      <RowDivider>
+        <SideScroller>
+          <slot name="durations">
 
-        </slot>
-      </SideScroller>
+          </slot>
+        </SideScroller>
+        <div class="text">
+          Duration
+        </div>
+      </RowDivider>
     </div>
 
     <div class="nav_item">
-      <SideScroller>
-        <slot name="octave">
-
-        </slot>
-      </SideScroller>
+      <RowDivider>
+        <SideScroller>
+          <slot name="octave">
+          </slot>
+        </SideScroller>
+        <div class="text">
+          Octave
+        </div>
+      </RowDivider>
     </div>
 
     <div class="nav_item">
-      <SideScroller>
-        <slot name="note">
+      <RowDivider>
+        <SideScroller>
+          <slot name="note">
 
-        </slot>
-      </SideScroller>
-
+          </slot>
+        </SideScroller>
+        <div class="text">
+          Note
+        </div>
+      </RowDivider>
     </div>
 
     <div class="nav_item">
-      <slot name="accidental">
+      <RowDivider>
+        <div class="accidental_container">
+          <slot name="accidental">
 
-      </slot>
+          </slot>
+        </div>
+
+        <div class="text">
+          Natural/Sharp/Flat
+        </div>
+      </RowDivider>
     </div>
 
     <div class="nav_item">
@@ -96,7 +142,7 @@ nav {
   overflow: scroll;
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
-  background: #181818;
+  background: var(--nav_color);
   flex-wrap: nowrap;
   justify-content: space-between;
 }
@@ -145,6 +191,14 @@ nav a {
   width: 50%;
 }
 
+.text{
+  color: #a8a8a8;
+  font-size: 12px;
+}
 
+.accidental_container{
+  display: flex;
+  width: fit-content;
+}
 
 </style>
