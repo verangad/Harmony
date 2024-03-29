@@ -29,9 +29,9 @@ export function simplifyStaves(staves){
 }
 
 // Create an empty Stave object filled with quarted note rests and return it
-export function createStave(clef, timeSignature, level, firstInBar, x, y) {
+export function createStave(clef, timeSignature, firstInBar) {
     let notes = []
-    let stave = new Stave(x, y, 400);
+    let stave = new Stave(0, 0, 400);
 
     // If stave is the first in the line, add a clef and time signature
     if(firstInBar){

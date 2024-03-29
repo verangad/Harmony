@@ -1,6 +1,5 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import Login from './views/Login.vue'
 
 </script>
 
@@ -12,7 +11,6 @@ import Login from './views/Login.vue'
 
   <RouterView />
 </template>
-
 
 <style scoped>
   @import './assets/base.css';
