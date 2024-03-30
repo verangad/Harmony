@@ -12,7 +12,7 @@ Deployed Website Link: https://harmony-cl18.onrender.com/ <br>
 Harmony is a musical notation collaboration app that allows for composers to collaborate and create musical scores 
 where changes are updated in real time. 
 This app requires Node.js and was developed with Node version v20.11.1
-Google Firebase is used for database communication ...
+Google Firebase is used for database communication and storage.
 Socket.io is used for rooms and live collaboration.
 
 <h2>Current Features</h2>
