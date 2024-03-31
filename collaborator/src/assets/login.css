@@ -11,11 +11,14 @@ h5 {
 
 /* Container for image */
 .img_container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    min-height: calc(100vh - 72px);
+    position: absolute;
+    top: 20%;
+    left: 10%;
+}
+
+.piano_img {
+    width: 1000px;
+    height: 1000px;
 }
 
 /* Container background image */

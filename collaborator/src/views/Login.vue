@@ -38,8 +38,8 @@
               <RowDivider>
                 <div>
                   <h1 class="details_header">Harmony.</h1>
-                  <h3>Collaborative.</h3>
-                  <h5>Score Editor.</h5>
+                  <h3>Collaborative Score Editor.</h3>
+                  <h5>Create music together.</h5>
                 </div>
               </RowDivider>
             </div>
@@ -47,7 +47,7 @@
 
           <div class="background_container">
             <div class="img_container">
-              <!--<img class="vinyl_img" src="../assets/vinyl.png" alt="Vinyl."> -->
+              <img class="piano_img" src="../assets/piano.png" alt="Piano.">
             </div>
           </div>
 

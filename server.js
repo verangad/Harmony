@@ -152,6 +152,23 @@ serve.get('/assets/ScoreEditor.css', (req, res) => {
     res.sendFile(join(__dirname, './collaborator/dist/assets/ScoreEditor.css'));
 });
 
+serve.get('/assets/axios.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/axios.css'));
+});
+
+serve.get('/assets/HorizontalLine.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/HorizontalLine.css'));
+});
+
+serve.get('/assets/Login.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/Login.css'));
+});
+
+
+
 // Get API -> Images
 serve.get('/assets/full.png', (req, res) => {
     res.setHeader('Content-Type', 'image/png')
@@ -193,10 +210,21 @@ serve.get('/assets/rest.png', (req, res) => {
     res.sendFile(join(__dirname, './collaborator/dist/assets/rest.png'));
 });
 
+serve.get('/assets/natural.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/natural.png'));
+});
+
 serve.get('/assets/default.png', (req, res) => {
     res.setHeader('Content-Type', 'image/png')
     res.sendFile(join(__dirname, './default.png'));
 });
+
+serve.get('/assets/piano.png', (req, res) => {
+    res.setHeader('Content-Type', 'image/png')
+    res.sendFile(join(__dirname, './collaborator/dist/assets/piano.png'));
+});
+
 
 // Get API -> Socket.io library
 serve.get('/socket.io', (req, res) => {

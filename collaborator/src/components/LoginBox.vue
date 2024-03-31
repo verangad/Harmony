@@ -31,6 +31,7 @@
           this.$router.push({path: '/home'})
         })
         .catch((error) => {
+          window.alert("Incorrect Username or Password")
           console.log(error);
         })
       }

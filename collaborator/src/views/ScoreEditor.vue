@@ -221,15 +221,23 @@
         }
       },
       editNote(chord) {
+
+        // Clear
         this.context.svg.removeChild(this.group)
 
+        // Note and Stave we are editing
         let editingStave = this.position.stave
         let editingNote = this.position.note
 
-
+        // Add accidentals and octave
         let key = this.currNote.concat(this.accidental, "/", this.currOctave)
+
         let keyArr = []
         let dur = this.currDuration
+        let accidentalNotes = []
+        let selectedNoteDuration = this.staves[editingStave].notes[editingNote].duration
+
+        // Chord check, place all notes into the key
         if(chord){
           dur = this.chordDuration
           keyArr = this.visualizerNotes
@@ -238,7 +246,7 @@
           keyArr = [key]
         }
 
-        let accidentalNotes = []
+        // Add accidentals
         for(let i = 0; i < keyArr.length; i++){
 
           if(keyArr[i].charAt(1) !== "#" && keyArr[i].charAt(1) !== "b"){
@@ -249,8 +257,7 @@
           }
         }
 
-
-        let selectedNoteDuration = this.staves[editingStave].notes[editingNote].duration
+        // Get inverse of note duration for counting time
         if(selectedNoteDuration === "q") {
           selectedNoteDuration =  1.0/4.0
         }
@@ -261,7 +268,6 @@
         let newNoteDuration = 1.0/Number(dur)
 
         // Split Note
-
         // If note is same duration -> simply replace it
         if(selectedNoteDuration === newNoteDuration) {
 
@@ -275,325 +281,244 @@
           let remainder = selectedNoteDuration - newNoteDuration
           let index = editingNote + 1
 
+          // For inserting rests to pad the notes
           let insertRest = dur
-
-
+          if(!insertRest.includes("r")){
+            insertRest = insertRest.concat("r")
+          }
 
           this.staves[editingStave].notes[editingNote] = new StaveNote({ keys: keyArr, duration: dur.concat(this.currType) })
 
           // Insert same of first note as rests until there is no room
           for(remainder; remainder > 0; remainder -= newNoteDuration){
+            console.log(insertRest)
             this.staves[editingStave].notes.splice(index, 0, new StaveNote({ keys: keyArr, duration: insertRest }))
             index++
           }
-
         }
         // If new note is bigger than the selected, replace the notes that take up the space
         else if (selectedNoteDuration < newNoteDuration) {
-          // Check if fit in stave
-          let remainder = newNoteDuration;
-          let newNoteDurationString = (1.0 / newNoteDuration).toString()
-          let currNote = editingNote;
-          let numNotes = this.staves[editingStave].notes.length - 1
-          let numNotesToCut = 0;
-          let breaker = 0
-          let newRemainder = 0;
-          let oldKeys = [];
 
-          while(currNote <= numNotes && remainder > 0 && !breaker) {
+          let remainder = newNoteDuration
+          let currIndex = editingNote
+          // Insert
+          this.staves[editingStave].notes.splice(currIndex, 0, new StaveNote({ keys: keyArr, duration: dur.concat(this.currType) }))
+          currIndex++
 
-            let checkNoteDuration = this.staves[editingStave].notes[currNote].duration
+          // Remove all notes that fit in the duration or within the stave
+          while(remainder > 0 && currIndex < this.staves[editingStave].notes.length) {
+            let selected = this.staves[editingStave].notes[currIndex].duration
 
-            if (checkNoteDuration === "q") {
-              checkNoteDuration = 1.0 / 4.0
+            // Get inverse of note duration for counting time
+            if (selected === "q") {
+              selected = 1.0 / 4.0
             } else {
-              checkNoteDuration = 1.0 / Number(checkNoteDuration)
+              selected = 1.0 / Number(selected)
             }
 
-            if (checkNoteDuration <= remainder && currNote <= numNotes) {
-              numNotesToCut++;
-              currNote++
-              remainder -= checkNoteDuration
-            }
-            else if(checkNoteDuration > remainder && currNote <= numNotes) {
-              // duration of second note
-              newRemainder = checkNoteDuration - remainder;
+            remainder -= selected
 
-              oldKeys = this.staves[editingStave].notes[currNote].keys
-              breaker = 1
-            }
-          }
-
-          // Fits in
-          if(remainder === 0) {
-            this.staves[editingStave].notes[editingNote] = new StaveNote({keys: keyArr, duration: newNoteDurationString.concat(this.currType)})
-            for(let i = 0; i < numNotesToCut - 1; i++){
-              this.staves[editingStave].notes.splice(editingNote + 1, 1)
-            }
-          }
-          else if(remainder > 0 && currNote <= numNotes) {
-            this.staves[editingStave].notes[editingNote] = new StaveNote({keys: keyArr, duration: newNoteDurationString.concat(this.currType)})
-            for(let i = 0; i < numNotesToCut - 1; i++){
-              this.staves[editingStave].notes.splice(editingNote + 1, 1)
-            }
-            let remainderString = (1.0/remainder).toString()
-            let newRemainderString = (1.0/newRemainder).toString()
-            this.staves[editingStave].notes.splice(editingNote + 1, 1)
-            this.staves[editingStave].notes.splice(editingNote + 1, 0, new StaveNote({keys: oldKeys, duration: newRemainderString.concat(this.currType)}))
-
-
-          }
-          /*
-          // Overflow, create new stave or move to next one
-          */
-          else if (remainder > 0 && currNote > numNotes) {
-            //last stave, create new one
-            if(this.staves.length <= editingStave + 1){
-              this.staves.push(createStave("treble", "4/4", false))
-            }
-
-            // fill up to end of stave
-            for(let i = 0; i < numNotesToCut; i++){
-              let currDur = this.staves[editingStave].notes[editingNote].duration
-              this.staves[editingStave].notes[editingNote + i] = new StaveNote({keys: keyArr, duration: currDur})
-            }
-            let currDur = 0
-            if (this.staves[editingStave + 1].notes[0].duration === "q") {
-              currDur = 1.0 / 4.0
-            } else {
-              currDur = 1.0 / Number(this.staves[editingStave + 1].notes[0].duration)
-            }
-
-            let counter = 0
-            let newBreaker = false
-            let newOldKeys = []
-            let secondRemainder = 0
-            while(remainder > 0 && !newBreaker) {
-              console.log(remainder)
-              // Fill new stave
-              // Equal
-              if(remainder >= currDur){
-                this.staves[editingStave + 1].notes[counter] = new StaveNote({keys: keyArr, duration: this.staves[editingStave + 1].notes[0].duration})
-
-                remainder -= currDur
-                counter++
-              }
-              // split
-              else if (remainder < currDur){
-                // duration of second note
-                secondRemainder = currDur - remainder;
-
-                newOldKeys = this.staves[editingStave + 1].notes[counter].keys
-                newBreaker = 1
-              }
-            }
-            let newNoteDurationString = (1.0 / remainder).toString()
-            if(remainder > 0) {
-              this.staves[editingStave + 1].notes[counter] = new StaveNote({keys: keyArr, duration: newNoteDurationString})
-
-              let secondRemainderString = (1.0/secondRemainder).toString()
-              this.staves[editingStave].notes.splice(counter + 1, 1)
-              this.staves[editingStave].notes.splice(counter + 1, 0, new StaveNote({keys: newOldKeys, duration: secondRemainderString}))
-
+            // Remove excess notes
+            if (remainder >= 0 && currIndex < this.staves[editingStave].notes.length) {
+              this.staves[editingStave].notes.splice(currIndex, 1)
             }
           }
         }
 
-        if(keyArr.length > 0){
+        // Add accidentals
+        if(keyArr.length > 0) {
           let acciNotes = this.staves[editingStave].notes[editingNote]
           for(let j = 0; j < accidentalNotes.length; j++){
-            if(accidentalNotes[j] !== ""){
+            if(accidentalNotes[j] !== "") {
               acciNotes.addModifier(new Accidental(accidentalNotes[j]), j)
             }
-
           }
         }
 
         // Select Note
+        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
 
-          this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+        // Draw and save
+        this.drawScore()
+        this.sendSheet()
+        this.saveSheet()
+      },
+      // Add an empty stave to the stave list and draw it
+      addStave(initialStave, clef, timeSignature, firstInBar) {
 
+        // Delete old drawn staves if not the first draw
+        if(!initialStave){
+          this.context.svg.removeChild(this.group)
+        }
 
-          this.drawScore()
-          this.sendSheet()
-          this.saveSheet()
-        },
-        // Add an empty stave to the stave list and draw it
-        addStave(initialStave, clef, timeSignature, firstInBar) {
+        // Add new stave to stave list
+        this.staves.push(createStave(clef, timeSignature, firstInBar))
 
-          // Delete old drawn staves if not the first draw
-          if(!initialStave){
-            this.context.svg.removeChild(this.group)
-          }
+        // Rehighlight the selected note (since we cleared the score
+        this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
 
-          // Add new stave to stave list
-          this.staves.push(createStave(clef, timeSignature, firstInBar))
-
-          // Rehighlight the selected note (since we cleared the score
-          this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+        // Draw, send to other users and save to database
+        this.drawScore()
+        this.sendSheet()
+        this.saveSheet()
+      },
+      // Delete the last stave from the stave list and redraw it
+      deleteStave()
+      {
+        // If we have a stave to delete
+        if(this.staves.length > 0) {
+          // Clear score and remove last stave
+          this.context.svg.removeChild(this.group)
+          this.staves.pop()
 
           // Draw, send to other users and save to database
           this.drawScore()
           this.sendSheet()
           this.saveSheet()
-        },
-        // Delete the last stave from the stave list and redraw it
-        deleteStave()
-        {
-          // If we have a stave to delete
-          if(this.staves.length > 0) {
-            // Clear score and remove last stave
-            this.context.svg.removeChild(this.group)
-            this.staves.pop()
-
-            // Draw, send to other users and save to database
-            this.drawScore()
-            this.sendSheet()
-            this.saveSheet()
-          }
-        },
-        // Update the score in the array and redraw
-        updateScore(initialStave, score) {
-          // Set score variable to the given score
-          this.staves = score
-
-          // If not initial draw, clear the score canvas and chord canvas
-          if(!initialStave) {
-            this.context.svg.removeChild(this.group)
-            //this.visualizerContext.svg.removeChild(this.visualizerGroup)
-          }
-
-          // Re set selected if a note exists
-          if(this.staves.length > 0){
-            if(this.staves[0].notes.length > 0){
-              this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
-            }
-          }
-          this.drawScore()
-        },
-
-        drawVisualizer(initial){
-
-          // If not drawing the initial stave, clear the chord visualizer
-          if(!initial){
-            this.visualizerContext.svg.removeChild(this.visualizerGroup)
-          }
-
-          // Insert accidentals
-          let accidentalNotes = []
-          for(let i = 0; i < this.visualizerNotes.length; i++){
-
-            // Append nothing if natural accidental
-            if(this.visualizerNotes[i].charAt(1) !== "#" && this.visualizerNotes[i].charAt(1) !== "b"){
-              accidentalNotes.push("")
-            }
-            else {
-              // Append accidental
-              accidentalNotes.push(this.visualizerNotes[i].charAt(1))
-            }
-          }
-
-          // Open group and resize visualizer before drawing
-          this.visualizerGroup = this.visualizerContext.openGroup();
-          this.visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight);
-
-          // Create new stave and add clef and time signature (there is only one stave for the chord visualizer)
-          let visualizerStave = new Stave(0,0,200)
-          visualizerStave.addClef("treble")
-          visualizerStave.addTimeSignature("4/4")
-
-          // Insert Chord notes with accidentals
-          let chordNotes = [new StaveNote({keys: ["b/4"], duration: "1r"})]
-          if(this.visualizerNotes.length > 0){
-            chordNotes = [new StaveNote({keys: this.visualizerNotes, duration: this.chordDuration})]
-
-            // Add accidentals
-            for(let j = 0; j < accidentalNotes.length; j++){
-              if(accidentalNotes[j] !== ""){
-                chordNotes[0].addModifier(new Accidental(accidentalNotes[j]), j)
-              }
-            }
-          }
-
-          // Draw stave and chord
-          visualizerStave.setContext(this.visualizerContext).draw()
-          Formatter.FormatAndDraw(this.visualizerContext, visualizerStave, chordNotes);
-
-          // Close group for future clearing
-          this.visualizerContext.closeGroup();
-        },
-        // Add a note to a chord and draw
-        addNoteToChord() {
-          // Add accidentals and octave
-          let note = this.chordNote.concat(this.chordAccidental ,"/", this.chordOctave)
-
-          // If note is not already in the chord, add note to chord and draw
-          if(!this.visualizerNotes.includes(note)){
-            this.visualizerNotes.push(note)
-            this.drawVisualizer(false)
-          }
-        },
-        // Change the duration of the chord and redraw
-        changeChordDuration(duration) {
-          this.chordDuration = duration
-
-          // If there are notes in the chord visualizer, redraw with the new duration
-          if(this.visualizerNotes.length > 0) {
-            this.drawVisualizer(false)
-          }
-        },
-        // Clear the chord visualizer and redraw
-        clearChord() {
-          this.visualizerNotes = []
-          this.drawVisualizer(false)
-        },
-        // Submit chord -> insert the chord into the score at the selected position
-        submitChord() {
-          this.editNote(true)
         }
       },
-      mounted(){
+      // Update the score in the array and redraw
+      updateScore(initialStave, score) {
+        // Set score variable to the given score
+        this.staves = score
 
-        // Socket.io connect to server
-        socket.connect();
+        // If not initial draw, clear the score canvas and chord canvas
+        if(!initialStave) {
+          this.context.svg.removeChild(this.group)
+          //this.visualizerContext.svg.removeChild(this.visualizerGroup)
+        }
 
-        // Get divs for the score and chord visualizer
-        this.div = document.getElementById("score_canvas")
-        this.visualizer = document.getElementById("chord_visualizer")
+        // Re set selected if a note exists
+        if(this.staves.length > 0){
+          if(this.staves[0].notes.length > 0){
+            this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+          }
+        }
+        this.drawScore()
+      },
 
-        // make Renderers for both divs
-        let renderer = new Renderer(this.div, Renderer.Backends.SVG)
-        let visualizerRenderer = new Renderer(this.visualizer, Renderer.Backends.SVG)
+      drawVisualizer(initial){
 
-        // Resize both renderers to fit the div
-        renderer.resize(this.div.offsetWidth, this.div.offsetHeight)
-        visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight)
+        // If not drawing the initial stave, clear the chord visualizer
+        if(!initial){
+          this.visualizerContext.svg.removeChild(this.visualizerGroup)
+        }
 
-        // Set in variables for future use
-        this.renderer = renderer
-        this.visualizerRenderer = visualizerRenderer
+        // Insert accidentals
+        let accidentalNotes = []
+        for(let i = 0; i < this.visualizerNotes.length; i++){
 
-        let recScore = store.score
-        this.id = recScore.id
+          // Append nothing if natural accidental
+          if(this.visualizerNotes[i].charAt(1) !== "#" && this.visualizerNotes[i].charAt(1) !== "b"){
+            accidentalNotes.push("")
+          }
+          else {
+            // Append accidental
+            accidentalNotes.push(this.visualizerNotes[i].charAt(1))
+          }
+        }
 
-        // Get context
-        this.context = renderer.getContext()
-        this.visualizerContext = visualizerRenderer.getContext()
+        // Open group and resize visualizer before drawing
+        this.visualizerGroup = this.visualizerContext.openGroup();
+        this.visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight);
 
-        // Join room with the unique id of this score
-        socket.emit('joinRoom', this.id);
+        // Create new stave and add clef and time signature (there is only one stave for the chord visualizer)
+        let visualizerStave = new Stave(0,0,200)
+        visualizerStave.addClef("treble")
+        visualizerStave.addTimeSignature("4/4")
 
-        // Update and draw initial score (rehydrated from the database) and draw the initial chord visualizer
-        let dehydratedStaves = JSON.parse(recScore.score)
-        this.updateScore(true, rehydrateStaves(dehydratedStaves, this.context))
-        this.drawVisualizer(true)
+        // Insert Chord notes with accidentals
+        let chordNotes = [new StaveNote({keys: ["b/4"], duration: "1r"})]
+        if(this.visualizerNotes.length > 0){
+          chordNotes = [new StaveNote({keys: this.visualizerNotes, duration: this.chordDuration})]
 
-        // Received broadcasted change from another user in the room. Update the current score with the changes
-        socket.on('scoreChangeBroadcast', (msg) => {
-          // Parse received staves into proper stave objects, update and redraw
-          let rehydratedStaves = rehydrateStaves(msg, this.context)
-          this.updateScore(false, rehydratedStaves)
-        })
+          // Add accidentals
+          for(let j = 0; j < accidentalNotes.length; j++){
+            if(accidentalNotes[j] !== ""){
+              chordNotes[0].addModifier(new Accidental(accidentalNotes[j]), j)
+            }
+          }
+        }
+
+        // Draw stave and chord
+        visualizerStave.setContext(this.visualizerContext).draw()
+        Formatter.FormatAndDraw(this.visualizerContext, visualizerStave, chordNotes);
+
+        // Close group for future clearing
+        this.visualizerContext.closeGroup();
+      },
+      // Add a note to a chord and draw
+      addNoteToChord() {
+        // Add accidentals and octave
+        let note = this.chordNote.concat(this.chordAccidental ,"/", this.chordOctave)
+
+        // If note is not already in the chord, add note to chord and draw
+        if(!this.visualizerNotes.includes(note)){
+          this.visualizerNotes.push(note)
+          this.drawVisualizer(false)
+        }
+      },
+      // Change the duration of the chord and redraw
+      changeChordDuration(duration) {
+        this.chordDuration = duration
+
+        // If there are notes in the chord visualizer, redraw with the new duration
+        if(this.visualizerNotes.length > 0) {
+          this.drawVisualizer(false)
+        }
+      },
+      // Clear the chord visualizer and redraw
+      clearChord() {
+        this.visualizerNotes = []
+        this.drawVisualizer(false)
+      },
+      // Submit chord -> insert the chord into the score at the selected position
+      submitChord() {
+        this.editNote(true)
+      }
+    },
+    mounted(){
+
+      // Socket.io connect to server
+      socket.connect();
+
+      // Get divs for the score and chord visualizer
+      this.div = document.getElementById("score_canvas")
+      this.visualizer = document.getElementById("chord_visualizer")
+
+      // make Renderers for both divs
+      let renderer = new Renderer(this.div, Renderer.Backends.SVG)
+      let visualizerRenderer = new Renderer(this.visualizer, Renderer.Backends.SVG)
+
+      // Resize both renderers to fit the div
+      renderer.resize(this.div.offsetWidth, this.div.offsetHeight)
+      visualizerRenderer.resize(this.visualizer.offsetWidth, this.visualizer.offsetHeight)
+
+      // Set in variables for future use
+      this.renderer = renderer
+      this.visualizerRenderer = visualizerRenderer
+
+      let recScore = store.score
+      this.id = recScore.id
+
+      // Get context
+      this.context = renderer.getContext()
+      this.visualizerContext = visualizerRenderer.getContext()
+
+      // Join room with the unique id of this score
+      socket.emit('joinRoom', this.id);
+
+      // Update and draw initial score (rehydrated from the database) and draw the initial chord visualizer
+      let dehydratedStaves = JSON.parse(recScore.score)
+      this.updateScore(true, rehydrateStaves(dehydratedStaves, this.context))
+      this.drawVisualizer(true)
+
+      // Received broadcasted change from another user in the room. Update the current score with the changes
+      socket.on('scoreChangeBroadcast', (msg) => {
+        // Parse received staves into proper stave objects, update and redraw
+        let rehydratedStaves = rehydrateStaves(msg, this.context)
+        this.updateScore(false, rehydratedStaves)
+      })
     }
   }
 </script>

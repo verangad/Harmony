@@ -2,10 +2,10 @@
   import Navigation from '../components/Navigation.vue'
   import ScoreList from '../components/ScoreList.vue'
   import LoginRoom from '../components/LoginRoom.vue'
-  import RowDivider from "@/components/RowDivider.vue"
-  import ColumnDivider from "@/components/ColumnDivider.vue"
-  import ScoreListItem from "@/components/ScoreListItem.vue"
-  import HorizontalLine from "@/components/HorizontalLine.vue"
+  import RowDivider from "../components/RowDivider.vue"
+  import ColumnDivider from "../components/ColumnDivider.vue"
+  import ScoreListItem from "../components/ScoreListItem.vue"
+  import HorizontalLine from "../components/HorizontalLine.vue"
   import axios from "axios";
   import { store } from '../store.js'
 

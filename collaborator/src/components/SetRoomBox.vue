@@ -86,7 +86,7 @@
         <input v-model="pass" :placeholder="this.placeholderPass"/>
       </div>
 
-      <div class="login_buttons">
+      <div class="set_room_buttons">
         <button v-if="ownsScore" type="button" @click="changeName">Change Name</button>
         <button v-if="ownsScore" type="button" @click="changePass">Change Password</button>
       </div>

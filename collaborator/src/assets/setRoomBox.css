@@ -21,6 +21,13 @@
     align-items: center;
 }
 
+.set_room_buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 20px;
+}
+
 /* Different sizes for smaller screens */
 @media (max-width: 1024px) {
     .join_container {
