@@ -1,4 +1,4 @@
-import { Stave, StaveNote } from 'vexflow';
+import {Accidental, Stave, StaveNote} from 'vexflow';
 
 // Given a Stave object, simplify it to be able to be sent and stored into the database
 export function simplifyStaves(staves){
@@ -53,7 +53,25 @@ function createNoteObject(note){
     let keys = note.keys
     let duration = note.duration
     let noteType = note.noteType
-    return new StaveNote({ keys: keys, duration: duration.concat(noteType) })
+    let accidentals = []
+
+    for(let i = 0; i < keys.length; i++){
+        if(keys[i].charAt(1) === "#" || keys[i].charAt(1) === "b") {
+            accidentals.push(keys[i].charAt(1))
+        }
+        else {
+            accidentals.push("")
+        }
+    }
+
+    let newNote = new StaveNote({ keys: keys, duration: duration.concat(noteType) })
+    for(let j = 0; j < accidentals.length; j++) {
+        if(accidentals[j] !== "" && noteType !== "r") {
+            newNote.addModifier(new Accidental(accidentals[j], j))
+        }
+    }
+
+    return newNote
 }
 
 // Create an empty Stave object and return it
