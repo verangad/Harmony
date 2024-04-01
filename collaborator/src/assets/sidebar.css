@@ -46,7 +46,7 @@
 }
 
 /* Different Styles for smaller screens */
-@media (max-width: 1000px) {
+@media (max-width: 1200px) {
     .sidebar {
         color: white;
         overflow: scroll;

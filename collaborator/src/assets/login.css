@@ -21,6 +21,12 @@ h5 {
     height: 1000px;
 }
 
+.hidden {
+    color: transparent;
+    user-select: none;
+    padding: 10px;
+}
+
 /* Container background image */
 .background_container {
     position: absolute;
@@ -42,6 +48,7 @@ h5 {
 
 /* Details header style */
 .details_header {
+    position: absolute;
     font-size: 4em;
     line-height: 34px;
     height: 25px;
@@ -53,6 +60,7 @@ h5 {
     width: 100%;
     height: 100%;
     padding: 20px;
+    overflow: visible;
 }
 
 /* Info box style */

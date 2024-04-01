@@ -38,6 +38,7 @@
               <RowDivider>
                 <div>
                   <h1 class="details_header">Harmony.</h1>
+                  <h1 class="hidden">H</h1>
                   <h3>Collaborative Score Editor.</h3>
                   <h5>Create music together.</h5>
                 </div>
