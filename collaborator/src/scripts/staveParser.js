@@ -63,11 +63,10 @@ function createNoteObject(note){
             accidentals.push("")
         }
     }
-
     let newNote = new StaveNote({ keys: keys, duration: duration.concat(noteType) })
     for(let j = 0; j < accidentals.length; j++) {
         if(accidentals[j] !== "" && noteType !== "r") {
-            newNote.addModifier(new Accidental(accidentals[j], j))
+            newNote.addModifier(new Accidental(accidentals[j]), j)
         }
     }
 
@@ -109,5 +108,6 @@ export function rehydrateStaves(staves){
 
         rehydratedStaves.push({"stave": rehydratedStave, "notes": rehydratedNotes})
     }
+
     return rehydratedStaves
 }
