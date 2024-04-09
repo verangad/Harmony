@@ -64,6 +64,7 @@ io.on('connection', (socket) => {
     });
     socket.on("leaveRoom", (msg) => {
         socket.leave(msg);
+        console.log("Left room", msg)
     });
 });
 
