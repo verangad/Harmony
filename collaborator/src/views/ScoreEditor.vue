@@ -86,6 +86,9 @@
           })
         });
 
+        // Leave room
+        socket.emit('leaveRoom', this.id)
+
         // After saving, go back to home page
         this.$router.push('/home')
       },

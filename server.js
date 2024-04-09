@@ -62,6 +62,9 @@ io.on('connection', (socket) => {
             socket.to(msg).emit('scoreChangeBroadcast', change);
         });
     });
+    socket.on("leaveRoom", (msg) => {
+        socket.leave(msg);
+    });
 });
 
 // Get API -> HTML
