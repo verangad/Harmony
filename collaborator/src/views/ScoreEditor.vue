@@ -389,9 +389,13 @@
         }
 
         // Re set selected if a note exists
-        if(this.staves.length > 0){
-          if(this.staves[0].notes.length > 0){
+        if(this.staves.length > this.position.stave){
+          if(this.staves[this.position.stave].notes.length > this.position.note){
             this.staves[this.position.stave].notes[this.position.note].setStyle({fillStyle: "blue", strokeStyle: "blue"})
+          }
+          else {
+            this.position.stave = 0
+            this.position.note = 0
           }
         }
         this.drawScore()
