@@ -1,9 +1,7 @@
 <h1>Harmony Collaborator</h1>
-
-<br><br>
+<br>
 Deployed Website Link: https://harmony-cl18.onrender.com/ <br>
 (Using OnRender's free hosting plan. May take a minute to load if it hasn't been accessed in a while)
-
 <br>
 <h2>Description</h2>
 
