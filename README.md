@@ -1,6 +1,4 @@
 <h1>Harmony Collaborator</h1>
-University of Manitoba COMP 4300 (Computer Networks) Final Project <br>
-By Dillan Veranga 
 
 <br><br>
 Deployed Website Link: https://harmony-cl18.onrender.com/ <br>
